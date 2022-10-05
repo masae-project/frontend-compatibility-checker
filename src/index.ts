@@ -8,22 +8,44 @@ export default class IndexPage {
     no: string = "您的浏览器不支持本站的所有功能，建议您更换浏览器。";
 
     constructor() {
-        // const nojs: HTMLElement = document.getElementById('nojs');
-        // nojs.remove();
-        // const noscripts: HTMLCollectionOf<HTMLElement> = document.getElementsByTagName('noscript');
-        // for (const key in noscripts) {
-        //     if (Object.prototype.hasOwnProperty.call(noscripts, key)) {
-        //         const noscript = noscripts[key];
-        //         noscript.remove();
-        //     }
-        // }
-        // this.ui();
-        // this.addLine("正在进行前端兼容性检查，如果网页没有响应，可能是网速原因或者" + this.no);
-        // this.addLine("<hr/>");
-        // this.testNow();
+        const nojs: HTMLElement = document.getElementById('nojs');
+        nojs.remove();
+        const noscripts: HTMLCollectionOf<HTMLElement> = document.getElementsByTagName('noscript');
+        for (const key in noscripts) {
+            if (Object.prototype.hasOwnProperty.call(noscripts, key)) {
+                const noscript = noscripts[key];
+                noscript.remove();
+            }
+        }
+        this.ui();
+        this.addLine("正在进行前端兼容性检查，如果网页没有响应，可能是网速原因或者" + this.no);
+        this.addLine("<hr/>");
+        this.testNow();
     }
 
     ui() {
+        this.progress = document.createElement('progress');
+        this.progress.id = 'progress';
+        this.progress.max = 9;
+        this.progress.value = 0;
+        document.body.appendChild(this.progress);
+        this.testArea = document.createElement('div');
+        this.testArea.id = 'testArea';
+        const customElementn: HTMLElement = document.createElement('custom-element');
+        customElementn.id = 'custom-element';
+        customElementn.className = 'testObj';
+        customElementn.setAttribute('c-val', '+');
+        this.testArea.appendChild(customElementn);
+        this.checkbox = document.createElement('input');
+        this.checkbox.id = 'checkbox';
+        this.checkbox.className = 'testObj';
+        this.checkbox.type = 'checkbox';
+        this.testArea.appendChild(this.checkbox);
+        this.checkboxspan = document.createElement('span');
+        this.checkboxspan.id = 'checkboxspan';
+        this.checkboxspan.className = 'testObj';
+        this.testArea.appendChild(this.checkboxspan);
+        document.body.appendChild(this.testArea);
     }
 
     testNow() {

@@ -27,3 +27,5 @@
  */
 
 import './index.css';
+import IndexPage from './index';
+const index = new IndexPage();
