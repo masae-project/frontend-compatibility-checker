@@ -1,3 +1,5 @@
+import CustomElement from "./custom-element";
+
 export default class IndexPage {
     progress: HTMLProgressElement;
     checkbox: HTMLInputElement;
@@ -52,9 +54,22 @@ export default class IndexPage {
         this.progress.value = this.step;
         this.step++;
         switch (this.step) {
+            case 1:
+                this.addLine("→ 检查 HTML5 兼容性...");
+                this.html5Test();
+                this.testNow();
+                break;
             default:
                 this.end();
                 break;
+        }
+    }
+
+    html5Test(): boolean {
+        if (typeof (Worker) !== "undefined") {
+            return this.ok(typeof (Worker));
+        } else {
+            return this.fail(typeof (Worker));
         }
     }
 
