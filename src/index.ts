@@ -59,11 +59,16 @@ export default class IndexPage {
                 this.html5Test();
                 this.testNow();
                 break;
-                case 2:
-                    this.addLine("→ 检查 Canvas 兼容性...");
-                    this.canvasTest();
-                    this.testNow();
-                    break;
+            case 2:
+                this.addLine("→ 检查 Canvas 兼容性...");
+                this.canvasTest();
+                this.testNow();
+                break;
+            case 3:
+                this.addLine("→ 检查 SVG 兼容性...");
+                this.svgTest();
+                this.testNow();
+                break;
             default:
                 this.end();
                 break;
@@ -82,6 +87,14 @@ export default class IndexPage {
         const canvas: HTMLCanvasElement = document.createElement('canvas');
         const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
         if (canvas.getContext && ctx) {
+            return this.ok();
+        } else {
+            return this.fail();
+        }
+    }
+
+    svgTest(): boolean {
+        if (document.createElementNS && document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGRect) {
             return this.ok();
         } else {
             return this.fail();
