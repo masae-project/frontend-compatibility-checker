@@ -59,6 +59,11 @@ export default class IndexPage {
                 this.html5Test();
                 this.testNow();
                 break;
+                case 2:
+                    this.addLine("→ 检查 Canvas 兼容性...");
+                    this.canvasTest();
+                    this.testNow();
+                    break;
             default:
                 this.end();
                 break;
@@ -70,6 +75,16 @@ export default class IndexPage {
             return this.ok(typeof (Worker));
         } else {
             return this.fail(typeof (Worker));
+        }
+    }
+
+    canvasTest(): boolean {
+        const canvas: HTMLCanvasElement = document.createElement('canvas');
+        const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
+        if (canvas.getContext && ctx) {
+            return this.ok();
+        } else {
+            return this.fail();
         }
     }
 
