@@ -74,6 +74,10 @@ export default class IndexPage {
                 this.addLine("→ 检查 CSS Keyframes 动画...");
                 this.cssKeyframes();
                 break;
+            case 5:
+                this.addLine("→ 检查 CSS Transition 动画...");
+                this.cssTransition();
+                break;
             default:
                 this.end();
                 break;
@@ -115,6 +119,20 @@ export default class IndexPage {
                 this.fail(this.checkboxspan.offsetWidth.toString());
             }
             this.checkboxspan.style.animation = "";
+            this.testNow();
+        }, 500);
+    }
+
+    cssTransition() {
+        this.checkboxspan.style.transition = "0.3s";
+        this.checkboxspan.style.width = "20px";
+        setTimeout(() => {
+            if (this.checkboxspan.offsetWidth == 20) {
+                this.ok();
+            } else {
+                this.fail();
+            }
+            this.checkboxspan.style.transition = "";
             this.testNow();
         }, 500);
     }
