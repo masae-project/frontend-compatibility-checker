@@ -69,6 +69,11 @@ export default class IndexPage {
                 this.svgTest();
                 this.testNow();
                 break;
+            case 4:
+                this.addLine("<hr/>");
+                this.addLine("→ 检查 CSS Keyframes 动画...");
+                this.cssKeyframes();
+                break;
             default:
                 this.end();
                 break;
@@ -99,6 +104,19 @@ export default class IndexPage {
         } else {
             return this.fail();
         }
+    }
+
+    cssKeyframes() {
+        this.checkboxspan.style.animation = "spanani 0.3s linear forwards";
+        setTimeout(() => {
+            if (this.checkboxspan.offsetWidth == 30) {
+                this.ok(this.checkboxspan.offsetWidth.toString());
+            } else {
+                this.fail(this.checkboxspan.offsetWidth.toString());
+            }
+            this.checkboxspan.style.animation = "";
+            this.testNow();
+        }, 500);
     }
 
     ok(text: string = ""): boolean {
