@@ -83,6 +83,12 @@ export default class IndexPage {
                 this.cssSelecterTest();
                 this.testNow();
                 break;
+            case 7:
+                this.addLine("<hr/>");
+                this.addLine("→ 检查 ES6 兼容性...");
+                this.es6Test();
+                this.testNow();
+                break;
             default:
                 this.end();
                 break;
@@ -149,6 +155,20 @@ export default class IndexPage {
             return this.ok(width.toString());
         } else {
             return this.fail(width.toString());
+        }
+    }
+
+    es6Test(): boolean {
+        const arrowFunction = "var t = () => {};";
+        const asyncFunction = "var t = async () => {};";
+        try {
+            let f: Function = new Function(arrowFunction);
+            f = new Function(asyncFunction);
+            return this.ok(f.toString());
+        }
+        catch (e) {
+            this.fail(e);
+            return false;
         }
     }
 
