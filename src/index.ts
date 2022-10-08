@@ -78,6 +78,11 @@ export default class IndexPage {
                 this.addLine("→ 检查 CSS Transition 动画...");
                 this.cssTransition();
                 break;
+            case 6:
+                this.addLine("→ 检查 CSS 选择器...");
+                this.cssSelecterTest();
+                this.testNow();
+                break;
             default:
                 this.end();
                 break;
@@ -135,6 +140,16 @@ export default class IndexPage {
             this.checkboxspan.style.transition = "";
             this.testNow();
         }, 500);
+    }
+
+    cssSelecterTest() {
+        this.checkbox.checked = true;
+        const width: number = this.checkboxspan.offsetWidth;
+        if (this.checkboxspan.offsetWidth == 20) {
+            return this.ok(width.toString());
+        } else {
+            return this.fail(width.toString());
+        }
     }
 
     ok(text: string = ""): boolean {
