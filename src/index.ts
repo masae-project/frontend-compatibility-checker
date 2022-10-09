@@ -90,8 +90,12 @@ export default class IndexPage {
                 this.testNow();
                 break;
             case 8:
-                this.addLine("→ 检查 Event 事件...");
+                this.addLine("→ 检查 Event ...");
                 this.clickTest();
+                break;
+            case 9:
+                this.addLine("→ 检查 自定义元素...");
+                this.customElementTest();
                 break;
             default:
                 this.end();
@@ -189,6 +193,24 @@ export default class IndexPage {
             this.testNow();
         }, 100);
         this.checkbox.click();
+    }
+
+    customElementTest() {
+        if (!window.customElements.define) {
+            return this.fail();
+        }
+        window.customElements.define('custom-element', CustomElement);
+        const customElement: CustomElement = document.getElementById('custom-element') as CustomElement;
+        customElement.addInfo();
+        setTimeout(() => {
+            const customElementE: CustomElement = document.getElementById('custom-element') as CustomElement;
+            if (customElementE.innerHTML == "-+") {
+                this.ok(customElementE.innerHTML);
+            } else {
+                this.fail(customElementE.innerHTML);
+            }
+            this.testNow();
+        }, 100);
     }
 
     ok(text: string = ""): boolean {
