@@ -89,6 +89,10 @@ export default class IndexPage {
                 this.es6Test();
                 this.testNow();
                 break;
+            case 8:
+                this.addLine("→ 检查 Event 事件...");
+                this.clickTest();
+                break;
             default:
                 this.end();
                 break;
@@ -170,6 +174,21 @@ export default class IndexPage {
             this.fail(e);
             return false;
         }
+    }
+
+    clickTest() {
+        this.checkbox.addEventListener('click', () => {
+            this.checkboxspan.style.width = "10px";
+        });
+        setTimeout(() => {
+            if (this.checkboxspan.style.width == "10px") {
+                this.ok(this.checkboxspan.style.width);
+            } else {
+                this.fail(this.checkboxspan.style.width);
+            }
+            this.testNow();
+        }, 100);
+        this.checkbox.click();
     }
 
     ok(text: string = ""): boolean {
