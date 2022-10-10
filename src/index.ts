@@ -8,6 +8,7 @@ export default class IndexPage {
     endi: number[] = [0, 0];
     testArea: HTMLDivElement;
     no: string = "您的浏览器不支持本站的所有功能，建议您更换浏览器。";
+    planTotal = 10;
 
     constructor() {
         const nojs: HTMLElement = document.getElementById('nojs');
@@ -28,7 +29,7 @@ export default class IndexPage {
     ui() {
         this.progress = document.createElement('progress');
         this.progress.id = 'progress';
-        this.progress.max = 9;
+        this.progress.max = this.planTotal;
         this.progress.value = 0;
         document.body.appendChild(this.progress);
         this.testArea = document.createElement('div');
@@ -96,6 +97,11 @@ export default class IndexPage {
             case 9:
                 this.addLine("→ 检查 自定义元素...");
                 this.customElementTest();
+                break;
+            case 10:
+                this.addLine("→ 检查 Storage 存储...");
+                this.storageTest();
+                this.testNow();
                 break;
             default:
                 this.end();
@@ -211,6 +217,32 @@ export default class IndexPage {
             }
             this.testNow();
         }, 100);
+    }
+
+    storageTest(): boolean {
+        const timestamp: number = new Date().getTime();
+        let val: string = timestamp.toString();
+        let key: string = "frontend-compatibility-checker-" + val;
+        if (window.Storage && window.localStorage && window.localStorage instanceof Storage) {
+            const vals = ["", ""];
+            sessionStorage.setItem(key, val);
+            vals[0] = sessionStorage.getItem(key);
+            if (vals[0] != val) {
+                return this.fail(val);
+            }
+            sessionStorage.removeItem(key);
+            key += "T";
+            val += "T";
+            localStorage.setItem(key, val);
+            vals[1] = localStorage.getItem(key);
+            if (vals[1] != val) {
+                return this.fail(val);
+            }
+            localStorage.removeItem(key);
+            return this.ok(vals.join(','));
+        } else {
+            return this.fail(val);
+        }
     }
 
     ok(text: string = ""): boolean {
