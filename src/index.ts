@@ -9,6 +9,7 @@ export default class IndexPage {
     testArea: HTMLDivElement;
     no: string = "您的浏览器不支持本站的所有功能，建议您更换浏览器。";
     planTotal = 10;
+    ul: HTMLUListElement;
 
     constructor() {
         const nojs: HTMLElement = document.getElementById('nojs');
@@ -20,9 +21,8 @@ export default class IndexPage {
                 noscript.remove();
             }
         }
+        document.body.innerHTML = "<p>正在进行前端兼容性检查...</p>如果下面的进度条卡住，可能是 网速原因 或者 " + this.no;
         this.ui();
-        this.addLine("正在进行前端兼容性检查，如果网页没有响应，可能是网速原因或者" + this.no);
-        this.addLine("<hr/>");
         this.testNow();
     }
 
@@ -56,50 +56,51 @@ export default class IndexPage {
         this.step++;
         switch (this.step) {
             case 1:
-                this.addLine("→ 检查 HTML5 兼容性...");
+                this.addLine("<hr/>");
+                this.addTitle("检查 HTML5 兼容性...");
                 this.html5Test();
                 this.testNow();
                 break;
             case 2:
-                this.addLine("→ 检查 Canvas 兼容性...");
+                this.addTitle("检查 Canvas 兼容性...");
                 this.canvasTest();
                 this.testNow();
                 break;
             case 3:
-                this.addLine("→ 检查 SVG 兼容性...");
+                this.addTitle("检查 SVG 兼容性...");
                 this.svgTest();
                 this.testNow();
                 break;
             case 4:
                 this.addLine("<hr/>");
-                this.addLine("→ 检查 CSS Keyframes 动画...");
+                this.addTitle("检查 CSS Keyframes 动画...");
                 this.cssKeyframes();
                 break;
             case 5:
-                this.addLine("→ 检查 CSS Transition 动画...");
+                this.addTitle("检查 CSS Transition 动画...");
                 this.cssTransition();
                 break;
             case 6:
-                this.addLine("→ 检查 CSS 选择器...");
+                this.addTitle("检查 CSS 选择器...");
                 this.cssSelecterTest();
                 this.testNow();
                 break;
             case 7:
                 this.addLine("<hr/>");
-                this.addLine("→ 检查 ES6 兼容性...");
+                this.addTitle("检查 ES6 兼容性...");
                 this.es6Test();
                 this.testNow();
                 break;
             case 8:
-                this.addLine("→ 检查 Event ...");
+                this.addTitle("检查 Event 事件...");
                 this.clickTest();
                 break;
             case 9:
-                this.addLine("→ 检查 自定义元素...");
+                this.addTitle("检查 自定义元素...");
                 this.customElementTest();
                 break;
             case 10:
-                this.addLine("→ 检查 Storage 存储...");
+                this.addTitle("检查 Storage 存储...");
                 this.storageTest();
                 this.testNow();
                 break;
@@ -247,18 +248,47 @@ export default class IndexPage {
 
     ok(text: string = ""): boolean {
         this.endi[0]++;
-        this.addLine(`<span class="ok" title="${text}">√ 通过！</span>`);
-        return true;
+        return this.addInfo(text, true);
     }
 
     fail(text: string = ""): boolean {
         this.endi[1]++;
-        this.addLine(`<span class="ng" title="${text}">× 失败！</span>`);
-        return false;
+        return this.addInfo(text, false);
+    }
+
+    addInfo(info: string, isOK: boolean): boolean {
+        const ul = document.createElement('ul');
+        const li: HTMLLIElement = document.createElement('li');
+        const span: HTMLSpanElement = document.createElement('span');
+        span.className = isOK ? "ok" : "ng";
+        span.title = info;
+        const checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.checked = isOK;
+        checkbox.onclick = function () {
+            return false;
+        }
+        checkbox.readOnly = true;
+        span.innerText = ` ${isOK ? "通过" : "失败"}! `;
+        span.insertBefore(checkbox, span.firstChild);
+        li.appendChild(span);
+        ul.appendChild(li);
+        this.ul.appendChild(ul);
+        return isOK;
+    }
+
+    addTitle(title: string) {
+        const line: HTMLDivElement = document.createElement('div');
+        this.ul = document.createElement('ul');
+        const li: HTMLLIElement = document.createElement('li');
+        li.innerText = title;
+        this.ul.appendChild(li);
+        line.appendChild(this.ul);
+        document.body.appendChild(line);
     }
 
     addLine(text: string) {
-        const line = document.createElement('div');
+        const line: HTMLDivElement = document.createElement('div');
         line.innerHTML = text;
         document.body.appendChild(line);
     }
@@ -274,9 +304,10 @@ export default class IndexPage {
         this.addLine("<hr/>");
         this.addLine(`检查完毕，共检查 ${this.endi[0] + this.endi[1]} 项，通过 ${this.endi[0]} 项，失败 ${this.endi[1]} 项。`);
         this.testArea.remove();
+        this.addLine("<hr/>");
         if (this.endi[1] > 0) {
-            this.addLine("<hr/>");
             this.addLine("<b>" + this.no + "</b>");
+            alert(this.no);
         } else {
             this.addLine("<b>检查通过！</b>");
         }
