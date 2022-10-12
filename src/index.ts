@@ -1,13 +1,26 @@
 import CustomElement from "./custom-element";
 
 export default class IndexPage {
+    // <可配置的選項>
+    // 在檢測全部通過後，要跳轉到的網址（空: 不跳转; `a`: 显示一个弹出提示框。）
+    urlOK: string = "";
+    // 在檢測未完全透過時，要跳轉到的網址（空: 不跳转; `a`: 显示一个弹出提示框。）
+    urlFail: string = "";
+    // 在頁面中顯示詳細資訊（否則只有提示資訊和進度條）
+    viewInfo: boolean = true;
+    // 儲存記錄到: 0.禁用 1.會話儲存 2.持久儲存
+    saveStorage = 0;
+    // 如果儲存記錄，鍵名是？（值將寫入 0 或 1 ）
+    saveStorageKey: string = "bc";
+    // </可配置的選項>
+
     progress: HTMLProgressElement;
     checkbox: HTMLInputElement;
     checkboxspan: HTMLSpanElement;
     step: number = 0;
     endi: number[] = [0, 0];
     testArea: HTMLDivElement;
-    no: string = "您的浏览器不支持本站的所有功能，建议您更换浏览器。";
+    no: string = "不支持当前浏览器，请更新到最新版本的浏览器再试。";
     planTotal = 10;
     ul: HTMLUListElement;
 
@@ -54,53 +67,54 @@ export default class IndexPage {
     testNow() {
         this.progress.value = this.step;
         this.step++;
+        const chk: string = "检查 ";
         switch (this.step) {
             case 1:
                 this.addLine("<hr/>");
-                this.addTitle("检查 HTML5 兼容性...");
+                this.addTitle(chk + "HTML5 兼容性...");
                 this.html5Test();
                 this.testNow();
                 break;
             case 2:
-                this.addTitle("检查 Canvas 兼容性...");
+                this.addTitle(chk + "Canvas 兼容性...");
                 this.canvasTest();
                 this.testNow();
                 break;
             case 3:
-                this.addTitle("检查 SVG 兼容性...");
+                this.addTitle(chk + "SVG 兼容性...");
                 this.svgTest();
                 this.testNow();
                 break;
             case 4:
                 this.addLine("<hr/>");
-                this.addTitle("检查 CSS Keyframes 动画...");
+                this.addTitle(chk + "CSS Keyframes 动画...");
                 this.cssKeyframes();
                 break;
             case 5:
-                this.addTitle("检查 CSS Transition 动画...");
+                this.addTitle(chk + "CSS Transition 动画...");
                 this.cssTransition();
                 break;
             case 6:
-                this.addTitle("检查 CSS 选择器...");
+                this.addTitle(chk + "CSS 选择器...");
                 this.cssSelecterTest();
                 this.testNow();
                 break;
             case 7:
                 this.addLine("<hr/>");
-                this.addTitle("检查 ES6 兼容性...");
+                this.addTitle(chk + "ES6 兼容性...");
                 this.es6Test();
                 this.testNow();
                 break;
             case 8:
-                this.addTitle("检查 Event 事件...");
+                this.addTitle(chk + "Event 事件...");
                 this.clickTest();
                 break;
             case 9:
-                this.addTitle("检查 自定义元素...");
+                this.addTitle(chk + "自定义元素...");
                 this.customElementTest();
                 break;
             case 10:
-                this.addTitle("检查 Storage 存储...");
+                this.addTitle(chk + "Storage 存储...");
                 this.storageTest();
                 this.testNow();
                 break;
@@ -257,6 +271,13 @@ export default class IndexPage {
     }
 
     addInfo(info: string, isOK: boolean): boolean {
+        if (isOK) {
+            console.log(isOK);
+        } else {
+            console.warn(isOK);
+            console.log(info);
+        }
+        if (!this.viewInfo) return isOK;
         const ul = document.createElement('ul');
         const li: HTMLLIElement = document.createElement('li');
         const span: HTMLSpanElement = document.createElement('span');
@@ -278,6 +299,8 @@ export default class IndexPage {
     }
 
     addTitle(title: string) {
+        console.log(title);
+        if (!this.viewInfo) return;
         const line: HTMLDivElement = document.createElement('div');
         this.ul = document.createElement('ul');
         const li: HTMLLIElement = document.createElement('li');
@@ -288,6 +311,7 @@ export default class IndexPage {
     }
 
     addLine(text: string) {
+        if (!this.viewInfo) return;
         const line: HTMLDivElement = document.createElement('div');
         line.innerHTML = text;
         document.body.appendChild(line);
@@ -302,14 +326,39 @@ export default class IndexPage {
             }
         }
         this.addLine("<hr/>");
-        this.addLine(`检查完毕，共检查 ${this.endi[0] + this.endi[1]} 项，通过 ${this.endi[0]} 项，失败 ${this.endi[1]} 项。`);
+        let info: string = `检查完毕，共检查 ${this.endi[0] + this.endi[1]} 项，通过 ${this.endi[0]} 项，失败 ${this.endi[1]} 项。`
+        console.log(info);
+        this.addLine(info);
         this.testArea.remove();
         this.addLine("<hr/>");
-        if (this.endi[1] > 0) {
-            this.addLine("<b>" + this.no + "</b>");
-            alert(this.no);
+        const isOK: boolean = this.endi[1] == 0;
+        if (this.saveStorage > 0 && this.saveStorageKey.length > 0 && window.Storage && window.localStorage && window.localStorage instanceof Storage) {
+            const save: Storage = (this.saveStorage == 1) ? window.sessionStorage : window.localStorage;
+            save.setItem(this.saveStorageKey, (isOK ? "1" : "0"));
+        }
+        if (isOK) {
+            info = "前端环境检查全部通过！";
+            console.log(info);
+            this.addLine("<b>" + info + "</b>");
+            if (this.urlOK.length > 0) {
+                if (this.urlOK == "a") {
+                    alert(info);
+                } else {
+                    console.log("->", this.urlOK);
+                    window.location.replace(this.urlOK);
+                }
+            }
         } else {
-            this.addLine("<b>检查通过！</b>");
+            console.warn(this.no);
+            this.addLine("<b>" + this.no + "</b>");
+            if (this.urlFail.length > 0) {
+                if (this.urlFail == "a") {
+                    alert(this.no);
+                } else {
+                    console.log("->", this.urlFail);
+                    window.location.replace(this.urlFail);
+                }
+            }
         }
     }
 }

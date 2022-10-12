@@ -15,6 +15,17 @@
 09. 检查 自定义元素
 10. 检查 Storage 存储
 
+## 可配置变量
+
+- `urlOK`: 在检测全部通过后，要跳转到的网址
+  - 空: 不跳转; `a`: 显示一个弹出提示框。
+- `urlFail`: 在检测未完全通过时，要跳转到的网址
+  - 空: 不跳转; `a`: 显示一个弹出提示框。
+- `viewInfo`: 在页面中显示详细信息（否则只有提示信息和进度条）
+- `saveStorage`: 保存记录到:
+  - 0.禁用 1.会话存储 2.持久存储
+- `saveStorageKey`: 如果存储记录，键名是？（值将写入 `0` 或 `1` ）
+
 # LICENCE
 
 Copyright (c) 2022 KagurazakaYashi frontend-compatibility-checker is licensed under Mulan PSL v2. You can use this software according to the terms and conditions of the Mulan PSL v2. You may obtain a copy of Mulan PSL v2 at: http://license.coscl.org.cn/MulanPSL2 THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE. See the Mulan PSL v2 for more details.
