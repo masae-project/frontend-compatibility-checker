@@ -34,7 +34,7 @@ export default class IndexPage {
                 noscript.remove();
             }
         }
-        document.body.innerHTML = "<p>正在进行前端兼容性检查...</p>如果下面的进度条卡住，可能是 网速原因 或者 " + this.no;
+        document.body.innerHTML = '<p>正在进行前端兼容性检查...&emsp;&emsp;<a href="https://github.com/miyabi-project/frontend-compatibility-checker" target="_blank">源码</a></p>如果下面的进度条卡住，可能是 网速原因 或者 ' + this.no;
         this.ui();
         this.testNow();
     }
