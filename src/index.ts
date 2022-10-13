@@ -3,15 +3,15 @@ import CustomElement from "./custom-element";
 export default class IndexPage {
     // <可配置的選項>
     // 在檢測全部通過後，要跳轉到的網址（空: 不跳转; `a`: 显示一个弹出提示框。）
-    urlOK: string = "";
+    urlOK: string = ""; // ""
     // 在檢測未完全透過時，要跳轉到的網址（空: 不跳转; `a`: 显示一个弹出提示框。）
-    urlFail: string = "";
+    urlFail: string = ""; // ""
     // 在頁面中顯示詳細資訊（否則只有提示資訊和進度條）
-    viewInfo: boolean = true;
+    viewInfo: boolean = true; // true
     // 儲存記錄到: 0.禁用 1.會話儲存 2.持久儲存
-    saveStorage = 0;
+    saveStorage = 0; // 0
     // 如果儲存記錄，鍵名是？（值將寫入 0 或 1 ）
-    saveStorageKey: string = "bc";
+    saveStorageKey: string = "bc"; // bc
     // </可配置的選項>
 
     progress: HTMLProgressElement;
@@ -73,37 +73,37 @@ export default class IndexPage {
                 this.addLine("<hr/>");
                 this.addTitle(chk + "HTML5 兼容性...");
                 this.html5Test();
-                this.testNow();
+                this.testDelay();
                 break;
             case 2:
                 this.addTitle(chk + "Canvas 兼容性...");
                 this.canvasTest();
-                this.testNow();
+                this.testDelay();
                 break;
             case 3:
                 this.addTitle(chk + "SVG 兼容性...");
                 this.svgTest();
-                this.testNow();
+                this.testDelay();
                 break;
             case 4:
                 this.addLine("<hr/>");
+                this.addTitle(chk + "CSS 选择器...");
+                this.cssSelecterTest();
+                this.testDelay();
+                break;
+            case 5:
                 this.addTitle(chk + "CSS Keyframes 动画...");
                 this.cssKeyframes();
                 break;
-            case 5:
+            case 6:
                 this.addTitle(chk + "CSS Transition 动画...");
                 this.cssTransition();
-                break;
-            case 6:
-                this.addTitle(chk + "CSS 选择器...");
-                this.cssSelecterTest();
-                this.testNow();
                 break;
             case 7:
                 this.addLine("<hr/>");
                 this.addTitle(chk + "ES6 兼容性...");
                 this.es6Test();
-                this.testNow();
+                this.testDelay();
                 break;
             case 8:
                 this.addTitle(chk + "Event 事件...");
@@ -116,12 +116,18 @@ export default class IndexPage {
             case 10:
                 this.addTitle(chk + "Storage 存储...");
                 this.storageTest();
-                this.testNow();
+                this.testDelay();
                 break;
             default:
                 this.end();
                 break;
         }
+    }
+
+    testDelay(time: number = 100) {
+        setTimeout(() => {
+            this.testNow();
+        }, time);
     }
 
     html5Test(): boolean {
@@ -150,10 +156,32 @@ export default class IndexPage {
         }
     }
 
+    cssSelecterTest() {
+        // 10 -> 20 -> 10
+        this.checkboxspan.style.animation = "";
+        this.checkboxspan.style.transition = "";
+        this.checkbox.checked = true;
+        let isOK: boolean = false;
+        let okStr: string = "";
+        let width: number = this.checkboxspan.offsetWidth;
+        isOK = (width == 20);
+        okStr = `${isOK}${width}`;
+        this.checkbox.click();
+        width = this.checkboxspan.offsetWidth;
+        isOK = (width == 10);
+        okStr += ` ${isOK}${width}`;
+        if (isOK) {
+            this.ok(okStr);
+        } else {
+            this.fail(okStr);
+        }
+    }
+
     cssKeyframes() {
+        // 10 -> 40
         this.checkboxspan.style.animation = "spanani 0.3s linear forwards";
         setTimeout(() => {
-            if (this.checkboxspan.offsetWidth == 30) {
+            if (this.checkboxspan.offsetWidth == 40) {
                 this.ok(this.checkboxspan.offsetWidth.toString());
             } else {
                 this.fail(this.checkboxspan.offsetWidth.toString());
@@ -164,27 +192,20 @@ export default class IndexPage {
     }
 
     cssTransition() {
+        // 40 -> 50
+        this.checkboxspan.style.animation = "";
         this.checkboxspan.style.transition = "0.3s";
-        this.checkboxspan.style.width = "20px";
+        this.checkboxspan.style.width = "50px";
         setTimeout(() => {
-            if (this.checkboxspan.offsetWidth == 20) {
-                this.ok();
+            let width: number = this.checkboxspan.offsetWidth;
+            if (width == 50) {
+                this.ok(width.toString());
             } else {
-                this.fail();
+                this.fail(width.toString());
             }
             this.checkboxspan.style.transition = "";
             this.testNow();
         }, 500);
-    }
-
-    cssSelecterTest() {
-        this.checkbox.checked = true;
-        const width: number = this.checkboxspan.offsetWidth;
-        if (this.checkboxspan.offsetWidth == 20) {
-            return this.ok(width.toString());
-        } else {
-            return this.fail(width.toString());
-        }
     }
 
     es6Test(): boolean {
@@ -272,10 +293,9 @@ export default class IndexPage {
 
     addInfo(info: string, isOK: boolean): boolean {
         if (isOK) {
-            console.log(isOK);
+            console.log(isOK, info);
         } else {
-            console.warn(isOK);
-            console.log(info);
+            console.warn(isOK, info);
         }
         if (!this.viewInfo) return isOK;
         const ul = document.createElement('ul');
@@ -345,7 +365,9 @@ export default class IndexPage {
                     alert(info);
                 } else {
                     console.log("->", this.urlOK);
-                    window.location.replace(this.urlOK);
+                    setTimeout(() => {
+                        window.location.replace(this.urlOK);
+                    }, 100);
                 }
             }
         } else {
@@ -356,7 +378,9 @@ export default class IndexPage {
                     alert(this.no);
                 } else {
                     console.log("->", this.urlFail);
-                    window.location.replace(this.urlFail);
+                    setTimeout(() => {
+                        window.location.replace(this.urlFail);
+                    }, 100);
                 }
             }
         }

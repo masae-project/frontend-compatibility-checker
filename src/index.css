@@ -29,6 +29,7 @@ progress {
   display: inline-block;
   width: 10px;
   height: 10px;
+  background-color: #FFF;
 }
 
 #checkbox:checked ~ #checkboxspan {
@@ -45,14 +46,14 @@ progress {
 
 @keyframes spanani {
   0% {
-    width: 10px;
-  }
-
-  50% {
     width: 20px;
   }
 
-  100% {
+  50% {
     width: 30px;
+  }
+
+  100% {
+    width: 40px;
   }
 }
