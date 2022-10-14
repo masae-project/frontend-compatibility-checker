@@ -36,6 +36,7 @@ export default class IndexPage {
         }
         document.body.innerHTML = '<p>正在进行前端兼容性检查...&emsp;&emsp;<a href="https://github.com/miyabi-project/frontend-compatibility-checker" target="_blank">源码</a></p>如果下面的进度条卡住，可能是 网速原因 或者 ' + this.no;
         this.ui();
+        this.browserInfo();
         this.testNow();
     }
 
@@ -118,6 +119,12 @@ export default class IndexPage {
                 this.storageTest();
                 this.testDelay();
                 break;
+            case 11:
+                this.addLine("<hr/>");
+                this.addTitle(chk + "WebGL ...");
+                this.webGLTest();
+                this.testDelay();
+                break;
             default:
                 this.end();
                 break;
@@ -128,6 +135,31 @@ export default class IndexPage {
         setTimeout(() => {
             this.testNow();
         }, time);
+    }
+
+    browserInfo() {
+        const texts: string[][] = [
+            ["浏览器语言", navigator.language],
+            ["浏览器用户代理", navigator.userAgent],
+            ["浏览器平台", navigator.platform],
+            ["浏览器厂商", navigator.vendor],
+            ["浏览器是否启用了Cookie", navigator.cookieEnabled.toString()],
+            ["浏览器是否启用了在线状态", navigator.onLine.toString()],
+        ];
+        if (this.viewInfo) {
+            const ul: HTMLUListElement = document.createElement('ul');
+            for (const text of texts) {
+                console.log(text[0]+": "+text[1]);
+                const li: HTMLLIElement = document.createElement('li');
+                li.innerHTML = text[0] + ":&emsp;";
+                const code: HTMLElement = document.createElement('code');
+                code.innerText = text[1];
+                li.appendChild(code);
+                ul.appendChild(li);
+            }
+            document.body.appendChild(document.createElement('hr'));
+            document.body.appendChild(ul);
+        }
     }
 
     html5Test(): boolean {
@@ -142,17 +174,21 @@ export default class IndexPage {
         const canvas: HTMLCanvasElement = document.createElement('canvas');
         const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
         if (canvas.getContext && ctx) {
-            return this.ok();
+            return this.ok(typeof ctx);
         } else {
-            return this.fail();
+            return this.fail(typeof ctx);
         }
     }
 
     svgTest(): boolean {
-        if (document.createElementNS && document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGRect) {
-            return this.ok();
-        } else {
+        if (!document.createElementNS) {
             return this.fail();
+        }
+        const svg: SVGSVGElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        if (svg) {
+            return this.ok(typeof svg);
+        } else {
+            return this.fail(typeof svg);
         }
     }
 
@@ -278,6 +314,16 @@ export default class IndexPage {
             return this.ok(vals.join(','));
         } else {
             return this.fail(val);
+        }
+    }
+
+    webGLTest(): boolean {
+        const canvas: HTMLCanvasElement = document.createElement('canvas');
+        const gl: WebGLRenderingContext | RenderingContext = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (gl && (gl instanceof WebGLRenderingContext)) {
+            return this.ok(typeof gl);
+        } else {
+            return this.fail(typeof gl);
         }
     }
 
