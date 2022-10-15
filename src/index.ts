@@ -121,7 +121,12 @@ export default class IndexPage {
                 break;
             case 11:
                 this.addLine("<hr/>");
-                this.addTitle(chk + "WebGL ...");
+                this.addTitle(chk + "JSON 序列化和解析...");
+                this.jsonTest();
+                this.testDelay();
+                break;
+            case 12:
+                this.addTitle(chk + "WebGL 支持...");
                 this.webGLTest();
                 this.testDelay();
                 break;
@@ -149,7 +154,7 @@ export default class IndexPage {
         if (this.viewInfo) {
             const ul: HTMLUListElement = document.createElement('ul');
             for (const text of texts) {
-                console.log(text[0]+": "+text[1]);
+                console.log(text[0] + ": " + text[1]);
                 const li: HTMLLIElement = document.createElement('li');
                 li.innerHTML = text[0] + ":&emsp;";
                 const code: HTMLElement = document.createElement('code');
@@ -314,6 +319,28 @@ export default class IndexPage {
             return this.ok(vals.join(','));
         } else {
             return this.fail(val);
+        }
+    }
+
+    jsonTest(): boolean {
+        const data: any = {};
+        for (let i = 0; i < 10; i++) {
+            const rand: number = Math.random();
+            data[i.toString()] = (rand >= 0.5) ? rand : rand.toString();
+
+        }
+        try {
+            const json: string = JSON.stringify(data);
+            const obj: any = JSON.parse(json);
+            const json2: string = JSON.stringify(obj);
+            if (json == json2) {
+                return this.ok(json);
+            } else {
+                return this.fail(json);
+            }
+        }
+        catch (e) {
+            return this.fail(e);
         }
     }
 
