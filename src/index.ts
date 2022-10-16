@@ -126,6 +126,11 @@ export default class IndexPage {
                 this.testDelay();
                 break;
             case 12:
+                this.addTitle(chk + "映射和集合支持...");
+                this.mapSetTest();
+                this.testDelay();
+                break;
+            case 13:
                 this.addTitle(chk + "WebGL 支持...");
                 this.webGLTest();
                 this.testDelay();
@@ -338,9 +343,36 @@ export default class IndexPage {
             } else {
                 return this.fail(json);
             }
-        }
-        catch (e) {
+        } catch (e) {
             return this.fail(e);
+        }
+    }
+
+    mapSetTest(): boolean {
+        const map: Map<string, string | number> = new Map<string, string | number>();
+        const set: Set<string | number> = new Set<string | number>();
+        for (let i = 0; i < 10; i++) {
+            const rand: number = Math.random();
+            const key: string = rand.toString();
+            const val: string | number = (rand >= 0.5) ? rand : rand.toString();
+            map.set(key, val);
+            set.add(val);
+        }
+        let json: string = "";
+        try {
+            const obj = Object.create(null);
+            for (const [k, v] of map) {
+                obj[k] = v;
+            }
+            json = "|" + JSON.stringify(obj);
+            const arr = [...set];
+            json += "|" + JSON.stringify(arr);
+        } catch (e) {
+        }
+        if (map.size == 10 && set.size == 10) {
+            return this.ok(map.size.toString() + json);
+        } else {
+            return this.fail(map.size.toString() + json);
         }
     }
 
