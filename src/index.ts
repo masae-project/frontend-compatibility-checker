@@ -1,6 +1,7 @@
 import CustomElement from "./custom-element";
+import CustomDelegateClass, { CustomDelegate } from "./custom-delegate";
 
-export default class IndexPage {
+export default class IndexPage implements CustomDelegate {
     // <可配置的選項>
     // 在檢測全部通過後，要跳轉到的網址（空: 不跳转; `a`: 显示一个弹出提示框。）
     urlOK: string = ""; // ""
@@ -21,7 +22,7 @@ export default class IndexPage {
     endi: number[] = [0, 0];
     testArea: HTMLDivElement;
     no: string = "不支持当前浏览器，请更新到最新版本的浏览器再试。";
-    planTotal = 10;
+    planTotal = 14;
     ul: HTMLUListElement;
 
     constructor() {
@@ -111,26 +112,30 @@ export default class IndexPage {
                 this.clickTest();
                 break;
             case 9:
+                this.addTitle(chk + "代理方法...");
+                this.delegateTest();
+                break;
+            case 10:
                 this.addTitle(chk + "自定义元素...");
                 this.customElementTest();
                 break;
-            case 10:
+            case 11:
                 this.addTitle(chk + "Storage 存储...");
                 this.storageTest();
                 this.testDelay();
                 break;
-            case 11:
+            case 12:
                 this.addLine("<hr/>");
                 this.addTitle(chk + "JSON 序列化和解析...");
                 this.jsonTest();
                 this.testDelay();
                 break;
-            case 12:
+            case 13:
                 this.addTitle(chk + "映射和集合支持...");
                 this.mapSetTest();
                 this.testDelay();
                 break;
-            case 13:
+            case 14:
                 this.addTitle(chk + "WebGL 支持...");
                 this.webGLTest();
                 this.testDelay();
@@ -281,6 +286,20 @@ export default class IndexPage {
             this.testNow();
         }, 100);
         this.checkbox.click();
+    }
+
+    delegateFunc(val1: string, val2: number) {
+        if (val1 == "1" && val2 == 0) {
+            this.ok(val1 + val2);
+        } else {
+            this.fail(val1 + val2);
+        }
+        this.testNow();
+    }
+
+    delegateTest() {
+        const testClass = new CustomDelegateClass();
+        testClass.delegate = this;
     }
 
     customElementTest() {
