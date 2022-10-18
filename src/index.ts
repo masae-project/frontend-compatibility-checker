@@ -37,6 +37,7 @@ export default class IndexPage implements CustomDelegate {
             }
         }
         document.body.innerHTML = '<p>正在进行前端兼容性检查...&emsp;&emsp;<a href="https://github.com/miyabi-project/frontend-compatibility-checker" target="_blank">源码</a></p>如果下面的进度条卡住，可能是 网速原因 或者 ' + this.no;
+        console.log(document.body.innerText);
         this.ui();
         this.browserInfo();
         this.testNow();
@@ -120,23 +121,24 @@ export default class IndexPage implements CustomDelegate {
                 this.delegateTest();
                 break;
             case 10:
-                this.addTitle(chk + "自定义元素...");
-                this.customElementTest();
-                break;
-            case 11:
-                this.addTitle(chk + "Storage 存储...");
-                this.storageTest();
-                this.testDelay();
-                break;
-            case 12:
                 this.addLine("<hr/>");
                 this.addTitle(chk + "JSON 序列化和解析...");
                 this.jsonTest();
                 this.testDelay();
                 break;
-            case 13:
+            case 11:
                 this.addTitle(chk + "映射和集合支持...");
                 this.mapSetTest();
+                this.testDelay();
+                break;
+            case 12:
+                this.addTitle(chk + "自定义元素...");
+                this.customElementTest();
+                break;
+            case 13:
+                this.addLine("<hr/>");
+                this.addTitle(chk + "Storage 存储...");
+                this.storageTest();
                 this.testDelay();
                 break;
             case 14:
@@ -424,6 +426,7 @@ export default class IndexPage implements CustomDelegate {
             console.log(isOK, info);
         } else {
             console.warn(isOK, info);
+            this.progress.style.backgroundColor = "#F00";
         }
         if (!this.viewInfo) return isOK;
         const ul = document.createElement('ul');
@@ -466,6 +469,7 @@ export default class IndexPage implements CustomDelegate {
     }
 
     end() {
+        this.progress.style.transition = "none";
         this.progress.style.width = "100%";
         const testObjs: HTMLCollectionOf<Element> = document.getElementsByClassName('testObj');
         for (const key in testObjs) {
@@ -494,9 +498,7 @@ export default class IndexPage implements CustomDelegate {
                     alert(info);
                 } else {
                     console.log("->", this.urlOK);
-                    setTimeout(() => {
-                        window.location.replace(this.urlOK);
-                    }, 100);
+                    this.jmp(this.urlOK);
                 }
             }
         } else {
@@ -507,11 +509,18 @@ export default class IndexPage implements CustomDelegate {
                     alert(this.no);
                 } else {
                     console.log("->", this.urlFail);
-                    setTimeout(() => {
-                        window.location.replace(this.urlFail);
-                    }, 100);
+                    this.jmp(this.urlFail);
                 }
             }
         }
+    }
+
+    jmp(url: string) {
+        this.progress.style.width = "0%";
+        setTimeout(() => {
+            this.progress.style.transition = "width 30s ease-out";
+            this.progress.style.width = "100%";
+            window.location.replace(url);
+        }, 100);
     }
 }
