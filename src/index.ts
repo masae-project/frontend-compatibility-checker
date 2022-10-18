@@ -15,14 +15,15 @@ export default class IndexPage implements CustomDelegate {
     saveStorageKey: string = "bc"; // bc
     // </可配置的選項>
 
-    progress: HTMLProgressElement;
+    planTotal = 14;
+    progress: HTMLDivElement;
+    progressStep = 0;
     checkbox: HTMLInputElement;
     checkboxspan: HTMLSpanElement;
     step: number = 0;
     endi: number[] = [0, 0];
     testArea: HTMLDivElement;
     no: string = "不支持当前浏览器，请更新到最新版本的浏览器再试。";
-    planTotal = 14;
     ul: HTMLUListElement;
 
     constructor() {
@@ -42,11 +43,13 @@ export default class IndexPage implements CustomDelegate {
     }
 
     ui() {
-        this.progress = document.createElement('progress');
+        this.progressStep = 100 / this.planTotal;
+        const progressbar: HTMLDivElement = document.createElement('div');
+        progressbar.id = 'progressbar';
+        this.progress = document.createElement('div');
         this.progress.id = 'progress';
-        this.progress.max = this.planTotal;
-        this.progress.value = 0;
-        document.body.appendChild(this.progress);
+        progressbar.appendChild(this.progress);
+        document.body.appendChild(progressbar);
         this.testArea = document.createElement('div');
         this.testArea.id = 'testArea';
         const customElementn: HTMLElement = document.createElement('custom-element');
@@ -67,7 +70,8 @@ export default class IndexPage implements CustomDelegate {
     }
 
     testNow() {
-        this.progress.value = this.step;
+        this.progress.style.width = (this.step * this.progressStep).toString() + '%';
+        console.log(this.progress.style.width)
         this.step++;
         const chk: string = "检查 ";
         switch (this.step) {
@@ -462,6 +466,7 @@ export default class IndexPage implements CustomDelegate {
     }
 
     end() {
+        this.progress.style.width = "100%";
         const testObjs: HTMLCollectionOf<Element> = document.getElementsByClassName('testObj');
         for (const key in testObjs) {
             if (Object.prototype.hasOwnProperty.call(testObjs, key)) {
