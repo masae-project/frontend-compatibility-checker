@@ -1,15 +1,18 @@
 {
   "name": "frontend-compatibility-checker",
   "productName": "frontend-compatibility-checker",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Browser modern front-end technology compatibility check tool",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
+    "make": "electron-forge make --skip-package && npm run out",
+    "makeapp": "electron-forge make && npm run out",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "lint": "eslint --ext .ts,.tsx .",
+    "out": "cat .webpack/renderer/main_window/index.js >out/index.js && cat .webpack/renderer/main_window/index.html | sed 's/..\\/main_window\\///' >out/index.html",
+    "compress": "rm -f out/index.js && uglifyjs .webpack/renderer/main_window/index.js --compress --mangle --stats --verbose --output out/index.js --source-map && cat .webpack/renderer/main_window/index.html | sed 's/..\\/main_window\\///' >out/index.html"
   },
   "repository": {
     "type": "git",
@@ -29,7 +32,7 @@
     "url": "https://github.com/miyabi-project/frontend-compatibility-checker/issues"
   },
   "homepage": "https://github.com/miyabi-project/frontend-compatibility-checker#readme",
-  "config": { 
+  "config": {
     "forge": {
       "packagerConfig": {},
       "makers": [
@@ -92,7 +95,8 @@
     "node-loader": "^2.0.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.4.1",
-    "typescript": "~4.5.4"
+    "typescript": "~4.5.4",
+    "uglify-es": "^3.3.9"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0"

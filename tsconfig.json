@@ -13,7 +13,8 @@
     "resolveJsonModule": true,
     "paths": {
       "*": ["node_modules/*"]
-    }
+    },
+    "importHelpers": true,
   },
   "include": ["src/**/*"]
 }

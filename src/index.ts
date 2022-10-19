@@ -13,6 +13,8 @@ export default class IndexPage implements CustomDelegate {
     saveStorage = 0; // 0
     // 如果儲存記錄，鍵名是？（值將寫入 0 或 1 ）
     saveStorageKey: string = "bc"; // bc
+    // 是否輸出一些關於資訊
+    about: boolean = true;
     // </可配置的選項>
 
     planTotal = 14;
@@ -36,7 +38,7 @@ export default class IndexPage implements CustomDelegate {
                 noscript.remove();
             }
         }
-        document.body.innerHTML = '<p>正在进行前端兼容性检查...&emsp;&emsp;<a href="https://github.com/miyabi-project/frontend-compatibility-checker" target="_blank">源码</a></p>如果下面的进度条卡住，可能是 网速原因 或者 ' + this.no;
+        document.body.innerHTML = '<p>正在进行前端兼容性检查...' + (this.about ? '&emsp;&emsp;<a href="https://github.com/miyabi-project/frontend-compatibility-checker" target="_blank">源码</a>' : '') + '</p>如果下面的进度条卡住，可能是 网速原因 或者 ' + this.no;
         console.log(document.body.innerText);
         this.ui();
         this.browserInfo();
