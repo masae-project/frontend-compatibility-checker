@@ -26,10 +26,13 @@ export default class IndexPage implements CustomDelegate {
     endi: number[] = [0, 0];
     testArea: HTMLDivElement;
     no: string = "不支持当前浏览器，请更新到最新版本的浏览器再试。";
-    ul: HTMLUListElement;
+    ul: HTMLUListElement = document.createElement('ul');
 
+    /**
+     * 構造方法
+     */
     constructor() {
-        const nojs: HTMLElement = document.getElementById('nojs');
+        const nojs: HTMLElement = document.getElementById('nojs') as HTMLElement;
         nojs.remove();
         const noscripts: HTMLCollectionOf<HTMLElement> = document.getElementsByTagName('noscript');
         for (const key in noscripts) {
@@ -40,12 +43,8 @@ export default class IndexPage implements CustomDelegate {
         }
         document.body.innerHTML = '<p>正在进行前端兼容性检查...' + (this.about ? '&emsp;&emsp;<a href="https://github.com/miyabi-project/frontend-compatibility-checker" target="_blank">源码</a>' : '') + '</p>如果下面的进度条卡住，可能是 网速原因 或者 ' + this.no;
         console.log(document.body.innerText);
-        this.ui();
-        this.browserInfo();
-        this.testNow();
-    }
 
-    ui() {
+        // UI
         this.progressStep = 100 / this.planTotal;
         const progressbar: HTMLDivElement = document.createElement('div');
         progressbar.id = 'progressbar';
@@ -70,8 +69,14 @@ export default class IndexPage implements CustomDelegate {
         this.checkboxspan.className = 'testObj';
         this.testArea.appendChild(this.checkboxspan);
         document.body.appendChild(this.testArea);
+
+        this.browserInfo();
+        this.testNow();
     }
 
+    /**
+     * 立即開始下一步測試任務
+     */
     testNow() {
         this.progress.style.width = (this.step * this.progressStep).toString() + '%';
         console.log(this.progress.style.width)
@@ -154,12 +159,19 @@ export default class IndexPage implements CustomDelegate {
         }
     }
 
+    /**
+     * 延遲啟動下一步測試任務
+     * @param {number} time 延遲時間
+     */
     testDelay(time: number = 100) {
         setTimeout(() => {
             this.testNow();
         }, time);
     }
 
+    /**
+     * 瀏覽器資訊
+     */
     browserInfo() {
         const texts: string[][] = [
             ["浏览器语言", navigator.language],
@@ -185,6 +197,10 @@ export default class IndexPage implements CustomDelegate {
         }
     }
 
+    /**
+     * 檢查 HTML5 相容性
+     * @return {boolean} 檢查結果
+     */
     html5Test(): boolean {
         if (typeof (Worker) !== "undefined") {
             return this.ok(typeof (Worker));
@@ -193,16 +209,24 @@ export default class IndexPage implements CustomDelegate {
         }
     }
 
+    /**
+     * 檢查 Canvas 相容性
+     * @return {boolean} 檢查結果
+     */
     canvasTest(): boolean {
         const canvas: HTMLCanvasElement = document.createElement('canvas');
-        const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
-        if (canvas.getContext && ctx) {
+        const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
+        if (typeof canvas.getContext == "function" && ctx) {
             return this.ok(typeof ctx);
         } else {
             return this.fail(typeof ctx);
         }
     }
 
+    /**
+     * 檢查 SVG 相容性
+     * @return {boolean} 檢查結果
+     */
     svgTest(): boolean {
         if (!document.createElementNS) {
             return this.fail();
@@ -215,6 +239,9 @@ export default class IndexPage implements CustomDelegate {
         }
     }
 
+    /**
+     * 檢查 CSS 選擇器
+     */
     cssSelecterTest() {
         // 10 -> 20 -> 10
         this.checkboxspan.style.animation = "";
@@ -236,6 +263,9 @@ export default class IndexPage implements CustomDelegate {
         }
     }
 
+    /**
+     * 檢查 CSS Keyframes 動畫
+     */
     cssKeyframes() {
         // 10 -> 40
         this.checkboxspan.style.animation = "spanani 0.3s linear forwards";
@@ -250,6 +280,9 @@ export default class IndexPage implements CustomDelegate {
         }, 500);
     }
 
+    /**
+     * 檢查 CSS Transition 動畫
+     */
     cssTransition() {
         // 40 -> 50
         this.checkboxspan.style.animation = "";
@@ -267,6 +300,10 @@ export default class IndexPage implements CustomDelegate {
         }, 500);
     }
 
+    /**
+     * 檢查 ES6 相容性
+     * @return {boolean} 檢查結果
+     */
     es6Test(): boolean {
         const arrowFunction = "var t = () => {};";
         const asyncFunction = "var t = async () => {};";
@@ -275,12 +312,15 @@ export default class IndexPage implements CustomDelegate {
             f = new Function(asyncFunction);
             return this.ok(f.toString());
         }
-        catch (e) {
-            this.fail(e);
+        catch (e: any) {
+            this.fail(e.toString());
             return false;
         }
     }
 
+    /**
+     * 檢查 Event 事件
+     */
     clickTest() {
         this.checkbox.addEventListener('click', () => {
             this.checkboxspan.style.width = "10px";
@@ -296,6 +336,11 @@ export default class IndexPage implements CustomDelegate {
         this.checkbox.click();
     }
 
+    /**
+     * CustomDelegate 代理方法的實現
+     * @param {string} val1 返回值1
+     * @param {number} val2 返回值2
+     */
     delegateFunc(val1: string, val2: number) {
         if (val1 == "1" && val2 == 0) {
             this.ok(val1 + val2);
@@ -305,55 +350,18 @@ export default class IndexPage implements CustomDelegate {
         this.testNow();
     }
 
+    /**
+     * 檢查 代理方法
+     */
     delegateTest() {
         const testClass = new CustomDelegateClass();
         testClass.delegate = this;
     }
 
-    customElementTest() {
-        if (!window.customElements.define) {
-            return this.fail();
-        }
-        window.customElements.define('custom-element', CustomElement);
-        const customElement: CustomElement = document.getElementById('custom-element') as CustomElement;
-        customElement.addInfo();
-        setTimeout(() => {
-            const customElementE: CustomElement = document.getElementById('custom-element') as CustomElement;
-            if (customElementE.innerHTML == "-+") {
-                this.ok(customElementE.innerHTML);
-            } else {
-                this.fail(customElementE.innerHTML);
-            }
-            this.testNow();
-        }, 100);
-    }
-
-    storageTest(): boolean {
-        const timestamp: number = new Date().getTime();
-        let val: string = timestamp.toString();
-        let key: string = "frontend-compatibility-checker-" + val;
-        if (window.Storage && window.localStorage && window.localStorage instanceof Storage) {
-            const vals = ["", ""];
-            sessionStorage.setItem(key, val);
-            vals[0] = sessionStorage.getItem(key);
-            if (vals[0] != val) {
-                return this.fail(val);
-            }
-            sessionStorage.removeItem(key);
-            key += "T";
-            val += "T";
-            localStorage.setItem(key, val);
-            vals[1] = localStorage.getItem(key);
-            if (vals[1] != val) {
-                return this.fail(val);
-            }
-            localStorage.removeItem(key);
-            return this.ok(vals.join(','));
-        } else {
-            return this.fail(val);
-        }
-    }
-
+    /**
+     * 檢查 JSON 序列化和解析
+     * @return {boolean} 檢查結果
+     */
     jsonTest(): boolean {
         const data: any = {};
         for (let i = 0; i < 10; i++) {
@@ -370,11 +378,15 @@ export default class IndexPage implements CustomDelegate {
             } else {
                 return this.fail(json);
             }
-        } catch (e) {
-            return this.fail(e);
+        } catch (e: any) {
+            return this.fail(e.toString());
         }
     }
 
+    /**
+     * 檢查 對映和集合支援
+     * @return {boolean} 檢查結果
+     */
     mapSetTest(): boolean {
         const map: Map<string, string | number> = new Map<string, string | number>();
         const set: Set<string | number> = new Set<string | number>();
@@ -403,9 +415,64 @@ export default class IndexPage implements CustomDelegate {
         }
     }
 
+    /**
+     * 檢查 自定義元素
+     */
+    customElementTest() {
+        if (!window.customElements.define) {
+            return this.fail();
+        }
+        window.customElements.define('custom-element', CustomElement);
+        const customElement: CustomElement = document.getElementById('custom-element') as CustomElement;
+        customElement.addInfo();
+        setTimeout(() => {
+            const customElementE: CustomElement = document.getElementById('custom-element') as CustomElement;
+            if (customElementE.innerHTML == "-+") {
+                this.ok(customElementE.innerHTML);
+            } else {
+                this.fail(customElementE.innerHTML);
+            }
+            this.testNow();
+        }, 100);
+    }
+
+    /**
+     * 檢查 Storage 儲存
+     * @returns {boolean} 檢查結果
+     */
+    storageTest(): boolean {
+        const timestamp: number = new Date().getTime();
+        let val: string = timestamp.toString();
+        let key: string = "frontend-compatibility-checker-" + val;
+        if (window.Storage && window.localStorage && window.localStorage instanceof Storage) {
+            const vals = ["", ""];
+            sessionStorage.setItem(key, val);
+            vals[0] = sessionStorage.getItem(key) ?? "";
+            if (vals[0] != val) {
+                return this.fail(val);
+            }
+            sessionStorage.removeItem(key);
+            key += "T";
+            val += "T";
+            localStorage.setItem(key, val);
+            vals[1] = localStorage.getItem(key) ?? "";
+            if (vals[1] != val) {
+                return this.fail(val);
+            }
+            localStorage.removeItem(key);
+            return this.ok(vals.join(','));
+        } else {
+            return this.fail(val);
+        }
+    }
+
+    /**
+     * 檢查 WebGL 支援
+     * @returns {boolean} 檢查結果
+     */
     webGLTest(): boolean {
         const canvas: HTMLCanvasElement = document.createElement('canvas');
-        const gl: WebGLRenderingContext | RenderingContext = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        const gl: WebGLRenderingContext | RenderingContext | null = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         if (gl && (gl instanceof WebGLRenderingContext)) {
             return this.ok(typeof gl);
         } else {
@@ -413,16 +480,32 @@ export default class IndexPage implements CustomDelegate {
         }
     }
 
+    /**
+     * 輸出成功的結果
+     * @param text 細節資訊
+     * @return {boolean} true
+     */
     ok(text: string = ""): boolean {
         this.endi[0]++;
         return this.addInfo(text, true);
     }
 
+    /**
+     * 輸出失敗的結果
+     * @param text 細節資訊
+     * @return {boolean} false
+     */
     fail(text: string = ""): boolean {
         this.endi[1]++;
         return this.addInfo(text, false);
     }
 
+    /**
+     * 輸出成功或失敗的結果
+     * @param info 細節資訊
+     * @param isOK 是否成功
+     * @return {boolean} 是否成功
+     */
     addInfo(info: string, isOK: boolean): boolean {
         if (isOK) {
             console.log(isOK, info);
@@ -451,6 +534,10 @@ export default class IndexPage implements CustomDelegate {
         return isOK;
     }
 
+    /**
+     * 顯示當前檢測任務的標題
+     * @param title 當前檢測任務的標題
+     */
     addTitle(title: string) {
         console.log(title);
         if (!this.viewInfo) return;
@@ -463,6 +550,10 @@ export default class IndexPage implements CustomDelegate {
         document.body.appendChild(line);
     }
 
+    /**
+     * 新增一行輸出資訊
+     * @param text 輸出資訊
+     */
     addLine(text: string) {
         if (!this.viewInfo) return;
         const line: HTMLDivElement = document.createElement('div');
@@ -470,6 +561,9 @@ export default class IndexPage implements CustomDelegate {
         document.body.appendChild(line);
     }
 
+    /**
+     * 所有測試任務結束後進行的操作
+     */
     end() {
         this.progress.style.transition = "none";
         this.progress.style.width = "100%";
@@ -517,6 +611,10 @@ export default class IndexPage implements CustomDelegate {
         }
     }
 
+    /**
+     * 網頁跳轉
+     * @param url 要跳轉到的網址
+     */
     jmp(url: string) {
         this.progress.style.width = "0%";
         setTimeout(() => {

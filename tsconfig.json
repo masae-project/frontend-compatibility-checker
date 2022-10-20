@@ -14,7 +14,7 @@
     "paths": {
       "*": ["node_modules/*"]
     },
-    "importHelpers": true,
+    "strict": true,
   },
   "include": ["src/**/*"]
 }
