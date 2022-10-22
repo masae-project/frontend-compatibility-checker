@@ -1,104 +1,42 @@
 {
   "name": "frontend-compatibility-checker",
-  "productName": "frontend-compatibility-checker",
   "version": "1.0.0",
-  "description": "Browser modern front-end technology compatibility check tool",
-  "main": ".webpack/main",
+  "description": "雅诗浏览器前端兼容性检查器",
+  "main": "webpack.config.js",
   "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make --skip-package && npm run out",
-    "makeapp": "electron-forge make && npm run out",
-    "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx .",
-    "out": "cat .webpack/renderer/main_window/index.js >out/index.js && cat .webpack/renderer/main_window/index.html | sed 's/..\\/main_window\\///' >out/index.html",
-    "compress": "rm -f out/index.js && uglifyjs .webpack/renderer/main_window/index.js --compress --mangle --stats --verbose --output out/index.js --source-map && cat .webpack/renderer/main_window/index.html | sed 's/..\\/main_window\\///' >out/index.html"
+    "build": "webpack --mode development --progress",
+    "release": "npm run clean && webpack --mode production --progress",
+    "serve": "npm run clean && npm run build && webpack-dev-server --mode development --progress --host 127.0.0.1 --port 9000 --open",
+    "watch": "webpack --mode development --progress --watch",
+    "debug": "npm run watch & http-server",
+    "clean": "rm -rf dist/*"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/miyabi-project/frontend-compatibility-checker.git"
   },
   "keywords": [
-    "frontend",
-    "compatibility",
-    "checker"
+    "typescript",
+    "template"
   ],
-  "author": {
-    "name": "KagurazakaYashi",
-    "email": "cyscxchope@gmail.com"
-  },
+  "author": "KagurazakaYashi",
   "license": "MulanPSL-2.0",
   "bugs": {
     "url": "https://github.com/miyabi-project/frontend-compatibility-checker/issues"
   },
   "homepage": "https://github.com/miyabi-project/frontend-compatibility-checker#readme",
-  "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "frontend_compatibility_checker"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ],
-      "plugins": [
-        [
-          "@electron-forge/plugin-webpack",
-          {
-            "mainConfig": "./webpack.main.config.js",
-            "renderer": {
-              "config": "./webpack.renderer.config.js",
-              "entryPoints": [
-                {
-                  "html": "./src/index.html",
-                  "js": "./src/renderer.ts",
-                  "name": "main_window"
-                }
-              ]
-            }
-          }
-        ]
-      ]
-    }
-  },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.65",
-    "@electron-forge/maker-deb": "^6.0.0-beta.65",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.65",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.65",
-    "@electron-forge/maker-zip": "^6.0.0-beta.65",
-    "@electron-forge/plugin-webpack": "^6.0.0-beta.65",
-    "@typescript-eslint/eslint-plugin": "^5.40.1",
-    "@typescript-eslint/parser": "^5.40.1",
-    "@vercel/webpack-asset-relocator-loader": "^1.7.3",
     "css-loader": "^6.7.1",
-    "electron": "21.1.1",
-    "eslint": "^8.25.0",
-    "eslint-plugin-import": "^2.26.0",
-    "fork-ts-checker-webpack-plugin": "^7.2.13",
-    "node-loader": "^2.0.0",
+    "css-minimizer-webpack-plugin": "^4.2.2",
+    "html-webpack-plugin": "^5.5.0",
+    "http-server": "^14.1.1",
+    "mini-css-extract-plugin": "^2.6.1",
     "style-loader": "^3.3.1",
+    "terser-webpack-plugin": "^5.3.6",
     "ts-loader": "^9.4.1",
-    "typescript": "~4.5.4",
-    "uglify-es": "^3.3.9"
-  },
-  "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "typescript": "^4.8.4",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.11.1"
   }
 }
