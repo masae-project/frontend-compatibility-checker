@@ -32,6 +32,7 @@ export default class Main implements CustomDelegate {
    * 構造方法
    */
   constructor() {
+    this.loadConf();
     const nojs: HTMLElement = document.getElementById('nojs') as HTMLElement;
     nojs.remove();
     const noscripts: HTMLCollectionOf<HTMLElement> = document.getElementsByTagName('noscript');
@@ -41,7 +42,7 @@ export default class Main implements CustomDelegate {
         noscript.remove();
       }
     }
-    document.body.innerHTML = '<p>正在进行前端兼容性检查...' + (this.about ? '&emsp;&emsp;<a href="https://github.com/miyabi-project/frontend-compatibility-checker" target="_blank">源码</a>' : '') + '</p>如果下面的进度条卡住，可能是 网速原因 或者 ' + this.no;
+    document.body.innerHTML = '<p><span id="stat">正在进行前端兼容性检查...</span>' + (this.about ? '&emsp;&emsp;<a href="https://github.com/miyabi-project/frontend-compatibility-checker" target="_blank">源码</a>' : '') + '</p><span id="alert">如果下面的进度条卡住，可能是 网速原因 或者 ' + this.no + '</span>';
     console.log(document.body.innerText);
 
     // UI
@@ -72,6 +73,65 @@ export default class Main implements CustomDelegate {
 
     this.browserInfo();
     this.testNow();
+  }
+
+  /**
+   * 獲取 # 後面的引數字典
+   * @return {string[][]} 引數字典
+   */
+  urlArgv(): string[][] {
+    const hashs: string = window.location.hash;
+    if (hashs.length == 0) {
+      return [];
+    }
+    let argv: string[] = hashs.split("#");
+    if (argv.length < 1) {
+      return [];
+    }
+    argv = argv[1].split("&");
+    const keys: string[] = [];
+    const vals: string[] = [];
+    for (const arg of argv) {
+      const args = arg.split("=");
+      keys.push(args[0]);
+      vals.push((args.length > 1) ? args[1] : "");
+    }
+    return [keys, vals];
+  }
+
+  /**
+   * 匯入從網址輸入的配置
+   */
+  loadConf() {
+    const argv: string[][] = this.urlArgv();
+    if (argv.length == 0) {
+      return;
+    }
+    const keys: string[] = argv[0];
+    const vals: string[] = argv[1];
+    for (let i = 0; i < keys.length; i++) {
+      const v: string = vals[i];
+      switch (keys[i]) {
+        case "urlOK":
+          this.urlOK = v;
+          break;
+        case "urlFail":
+          this.urlFail = v;
+          break;
+        case "viewInfo":
+          this.viewInfo = (v != "0");
+          break;
+        case "saveStorage":
+          this.saveStorage = parseInt(v);
+          break;
+        case "saveStorageKey":
+          this.saveStorageKey = v;
+          break;
+        case "about":
+          this.about = (v == "true");
+          break;
+      }
+    }
   }
 
   /**
@@ -574,12 +634,11 @@ export default class Main implements CustomDelegate {
         testObj.style.display = "none";
       }
     }
-    this.addLine("<hr/>");
-    let info: string = `检查完毕，共检查 ${this.endi[0] + this.endi[1]} 项，通过 ${this.endi[0]} 项，失败 ${this.endi[1]} 项。`
-    console.log(info);
-    this.addLine(info);
+    const stat: HTMLSpanElement = document.getElementById('stat') as HTMLSpanElement;
+    const alerti: HTMLSpanElement = document.getElementById('alert') as HTMLSpanElement;
+    console.log(stat.innerText);
+    stat.innerText = this.about ? `检查完毕，共检查 ${this.endi[0] + this.endi[1]} 项，通过 ${this.endi[0]} 项，失败 ${this.endi[1]} 项。` : "";
     this.testArea.remove();
-    this.addLine("<hr/>");
     const isOK: boolean = this.endi[1] == 0;
     if (this.saveStorage > 0 && this.saveStorageKey.length > 0 && window.Storage && window.localStorage && window.localStorage instanceof Storage) {
       const save: Storage = (this.saveStorage == 1) ? window.sessionStorage : window.localStorage;
@@ -587,20 +646,19 @@ export default class Main implements CustomDelegate {
       save.setItem(this.saveStorageKey, saveVal);
     }
     if (isOK) {
-      info = "前端环境检查全部通过！";
-      console.log(info);
-      this.addLine("<b>" + info + "</b>");
+      alerti.innerText = "运行环境检查通过！";
+      console.log(alerti.innerText);
       if (this.urlOK.length > 0) {
         if (this.urlOK == "a") {
-          alert(info);
+          alert(alerti.innerText);
         } else {
           console.log("->", this.urlOK);
           this.jmp(this.urlOK);
         }
       }
     } else {
+      alerti.innerText = this.no;
       console.warn(this.no);
-      this.addLine("<b>" + this.no + "</b>");
       if (this.urlFail.length > 0) {
         if (this.urlFail == "a") {
           alert(this.no);
@@ -610,6 +668,7 @@ export default class Main implements CustomDelegate {
         }
       }
     }
+    alerti.style.fontWeight = "bold";
   }
 
   /**
