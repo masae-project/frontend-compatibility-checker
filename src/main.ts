@@ -7,6 +7,8 @@ export default class Main implements CustomDelegate {
   urlOK: string = ""; // ""
   // 在檢測未完全透過時，要跳轉到的網址（空: 不跳转; `a`: 显示一个弹出提示框。）
   urlFail: string = ""; // ""
+  // 無論是否成功都跳轉（覆蓋以上設定）
+  url: string = ""; // ""
   // 在頁面中顯示詳細資訊（否則只有提示資訊和進度條）
   viewInfo: boolean = true; // true
   // 儲存記錄到: 0.禁用 1.會話儲存 2.持久儲存
@@ -15,6 +17,8 @@ export default class Main implements CustomDelegate {
   saveStorageKey: string = "bc"; // bc
   // 是否輸出一些關於資訊
   about: boolean = true;
+  // 語言
+  langID: number = 1;
   // </可配置的選項>
 
   planTotal = 14;
@@ -25,13 +29,34 @@ export default class Main implements CustomDelegate {
   step: number = 0;
   endi: number[] = [0, 0];
   testArea: HTMLDivElement;
-  no: string = "不支持当前浏览器，请更新到最新版本的浏览器再试。";
   ul: HTMLUListElement = document.createElement('ul');
-
+  ls = {
+    no: ["不支持当前浏览器，请更新到最新版本的浏览器再试。", "The current browser is not supported, please update to the latest version of the browser and try again."],
+    chk: ["正在进行前端兼容性检查...", "Checking front-end compatibility..."],
+    nr: ["如果下面的进度条卡住，可能是 网速原因 或者 ", "If the progress bar below is stuck, it may be due to network speed or "],
+    code: ["源码", "source code"],
+    compat: ["兼容性", "compatibility"],
+    lang: ["语言", "language"],
+    ua: ["用户代理", "user agent"],
+    platform: ["平台", "platform"],
+    vendor: ["供应商", "vendor"],
+    cookie: ["是否启用 Cookie", "Cookie enabled"],
+    onLine: ["是否在线", "Online"],
+    ok: ["通过", "OK"],
+    fail: ["未通过", "Fail"],
+    end: ["检测结束", "End"],
+    total: ["共", "Total"],
+    pass: ["通过", "Pass"],
+    chkok: ["检测通过!", "Check OK!"],
+    cheaking: ["正在检测 ", "Cheaking "],
+  }
   /**
    * 構造方法
    */
   constructor() {
+    if (navigator.language.search("zh") >= 0) {
+      this.langID = 0;
+    }
     this.loadConf();
     const nojs: HTMLElement = document.getElementById('nojs') as HTMLElement;
     nojs.remove();
@@ -42,7 +67,7 @@ export default class Main implements CustomDelegate {
         noscript.remove();
       }
     }
-    document.body.innerHTML = '<p><span id="stat">正在进行前端兼容性检查...</span>' + (this.about ? '&emsp;&emsp;<a href="https://github.com/miyabi-project/frontend-compatibility-checker" target="_blank">源码</a>' : '') + '</p><span id="alert">如果下面的进度条卡住，可能是 网速原因 或者 ' + this.no + '</span>';
+    document.body.innerHTML = '<p><span id="stat">' + this.ls.chk[this.langID] + '</span>' + (this.about ? '&emsp;&emsp;<a href="https://github.com/miyabi-project/frontend-compatibility-checker" target="_blank">' + this.ls.code[this.langID] + '</a>' : '') + '</p><span id="alert">' + this.ls.nr[this.langID] + this.ls.no[this.langID] + '</span>';
     console.log(document.body.innerText);
 
     // UI
@@ -130,6 +155,9 @@ export default class Main implements CustomDelegate {
         case "about":
           this.about = (v == "true");
           break;
+        case "langID":
+          this.langID = parseInt(v);
+          break;
       }
     }
   }
@@ -141,75 +169,76 @@ export default class Main implements CustomDelegate {
     this.progress.style.width = (this.step * this.progressStep).toString() + '%';
     console.log(this.progress.style.width)
     this.step++;
-    const chk: string = "检查 ";
+    const chk: string = this.ls.cheaking[this.langID];
+    const c = " " + this.ls.compat[this.langID] + "...";
     switch (this.step) {
       case 1:
         this.addLine("<hr/>");
-        this.addTitle(chk + "HTML5 兼容性...");
+        this.addTitle(chk + "HTML5" + c);
         this.html5Test();
         this.testDelay();
         break;
       case 2:
-        this.addTitle(chk + "Canvas 兼容性...");
+        this.addTitle(chk + "Canvas" + c);
         this.canvasTest();
         this.testDelay();
         break;
       case 3:
-        this.addTitle(chk + "SVG 兼容性...");
+        this.addTitle(chk + "SVG" + c);
         this.svgTest();
         this.testDelay();
         break;
       case 4:
         this.addLine("<hr/>");
-        this.addTitle(chk + "CSS 选择器...");
+        this.addTitle(chk + "CSS" + c);
         this.cssSelecterTest();
         this.testDelay();
         break;
       case 5:
-        this.addTitle(chk + "CSS Keyframes 动画...");
+        this.addTitle(chk + "CSS Keyframes" + c);
         this.cssKeyframes();
         break;
       case 6:
-        this.addTitle(chk + "CSS Transition 动画...");
+        this.addTitle(chk + "CSS Transition" + c);
         this.cssTransition();
         break;
       case 7:
         this.addLine("<hr/>");
-        this.addTitle(chk + "ES6 兼容性...");
+        this.addTitle(chk + "ES6" + c);
         this.es6Test();
         this.testDelay();
         break;
       case 8:
-        this.addTitle(chk + "Event 事件...");
+        this.addTitle(chk + "Event" + c);
         this.clickTest();
         break;
       case 9:
-        this.addTitle(chk + "代理方法...");
+        this.addTitle(chk + "Delegate" + c);
         this.delegateTest();
         break;
       case 10:
         this.addLine("<hr/>");
-        this.addTitle(chk + "JSON 序列化和解析...");
+        this.addTitle(chk + "JSON" + c);
         this.jsonTest();
         this.testDelay();
         break;
       case 11:
-        this.addTitle(chk + "映射和集合支持...");
+        this.addTitle(chk + "Map/Set" + c);
         this.mapSetTest();
         this.testDelay();
         break;
       case 12:
-        this.addTitle(chk + "自定义元素...");
+        this.addTitle(chk + "Custom element" + c);
         this.customElementTest();
         break;
       case 13:
         this.addLine("<hr/>");
-        this.addTitle(chk + "Storage 存储...");
+        this.addTitle(chk + "Storage" + c);
         this.storageTest();
         this.testDelay();
         break;
       case 14:
-        this.addTitle(chk + "WebGL 支持...");
+        this.addTitle(chk + "WebGL" + c);
         this.webGLTest();
         this.testDelay();
         break;
@@ -234,12 +263,12 @@ export default class Main implements CustomDelegate {
    */
   browserInfo() {
     const texts: string[][] = [
-      ["浏览器语言", navigator.language],
-      ["浏览器用户代理", navigator.userAgent],
-      ["浏览器平台", navigator.platform],
-      ["浏览器厂商", navigator.vendor],
-      ["浏览器是否启用了Cookie", navigator.cookieEnabled.toString()],
-      ["浏览器是否启用了在线状态", navigator.onLine.toString()],
+      [this.ls.lang[this.langID], navigator.language],
+      [this.ls.ua[this.langID], navigator.userAgent],
+      [this.ls.platform[this.langID], navigator.platform],
+      [this.ls.vendor[this.langID], navigator.vendor],
+      [this.ls.cookie[this.langID], navigator.cookieEnabled.toString()],
+      [this.ls.onLine[this.langID], navigator.onLine.toString()],
     ];
     if (this.viewInfo) {
       const ul: HTMLUListElement = document.createElement('ul');
@@ -586,7 +615,7 @@ export default class Main implements CustomDelegate {
       return false;
     }
     checkbox.readOnly = true;
-    span.innerText = ` ${isOK ? "通过" : "失败"}! `;
+    span.innerText = ` ${isOK ? this.ls.ok[this.langID] : this.ls.fail[this.langID]}! `;
     span.insertBefore(checkbox, span.firstChild);
     li.appendChild(span);
     ul.appendChild(li);
@@ -637,7 +666,7 @@ export default class Main implements CustomDelegate {
     const stat: HTMLSpanElement = document.getElementById('stat') as HTMLSpanElement;
     const alerti: HTMLSpanElement = document.getElementById('alert') as HTMLSpanElement;
     console.log(stat.innerText);
-    stat.innerText = this.about ? `检查完毕，共检查 ${this.endi[0] + this.endi[1]} 项，通过 ${this.endi[0]} 项，失败 ${this.endi[1]} 项。` : "";
+    stat.innerText = this.about ? `${this.ls.end[this.langID]}, ${this.ls.total[this.langID]} ${this.endi[0] + this.endi[1]} , ${this.ls.pass[this.langID]} ${this.endi[0]} , ${this.ls.fail[this.langID]} ${this.endi[1]} .` : "";
     this.testArea.remove();
     const isOK: boolean = this.endi[1] == 0;
     if (this.saveStorage > 0 && this.saveStorageKey.length > 0 && window.Storage && window.localStorage && window.localStorage instanceof Storage) {
@@ -646,10 +675,10 @@ export default class Main implements CustomDelegate {
       save.setItem(this.saveStorageKey, saveVal);
     }
     if (isOK) {
-      alerti.innerText = "运行环境检查通过！";
+      alerti.innerText = this.ls.chkok[this.langID];
       console.log(alerti.innerText);
-      if (this.urlOK.length > 0) {
-        if (this.urlOK == "a") {
+      if (this.urlOK.length > 0 || this.url.length > 0) {
+        if (this.url.length == 0 && this.urlOK == "a") {
           alert(alerti.innerText);
         } else {
           console.log("->", this.urlOK);
@@ -657,11 +686,11 @@ export default class Main implements CustomDelegate {
         }
       }
     } else {
-      alerti.innerText = this.no;
-      console.warn(this.no);
-      if (this.urlFail.length > 0) {
-        if (this.urlFail == "a") {
-          alert(this.no);
+      alerti.innerText = this.ls.no[this.langID];
+      console.warn(this.ls.no[this.langID]);
+      if (this.urlFail.length > 0 || this.url.length > 0) {
+        if (this.url.length == 0 && this.urlFail == "a") {
+          alert(this.ls.no[this.langID]);
         } else {
           console.log("->", this.urlFail);
           this.jmp(this.urlFail);

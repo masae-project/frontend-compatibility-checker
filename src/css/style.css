@@ -3,6 +3,7 @@ body {
   max-width: 38rem;
   padding: 2rem;
   background-color: #FFF;
+  overflow-y: scroll;
 }
 
 #nojs {
