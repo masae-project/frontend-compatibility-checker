@@ -12,9 +12,9 @@ export default class Main implements CustomDelegate {
   // 在頁面中顯示詳細資訊（否則只有提示資訊和進度條）
   viewInfo: boolean = true; // true
   // 儲存記錄到: 0.禁用 1.會話儲存 2.持久儲存
-  saveStorage = 0; // 0
+  saveStorage = 1; // 0
   // 如果儲存記錄，鍵名是？（值將寫入 0 或 1 ）
-  saveStorageKey: string = "bc"; // bc
+  saveStorageKey: string = "compatibility"; // compatibility
   // 是否輸出一些關於資訊
   about: boolean = true;
   // 語言
@@ -27,9 +27,9 @@ export default class Main implements CustomDelegate {
   checkbox: HTMLInputElement;
   checkboxspan: HTMLSpanElement;
   step: number = 0;
-  endi: number[] = [0, 0];
+  ends: number[][] = [[], []];
   testArea: HTMLDivElement;
-  ul: HTMLUListElement = document.createElement('ul');
+  ul: HTMLUListElement = document.createElement("ul");
   ls = {
     no: ["不支持当前浏览器，请更新到最新版本的浏览器再试。", "The current browser is not supported, please update to the latest version of the browser and try again."],
     chk: ["正在进行前端兼容性检查...", "Checking front-end compatibility..."],
@@ -58,9 +58,9 @@ export default class Main implements CustomDelegate {
       this.langID = 0;
     }
     this.loadConf();
-    const nojs: HTMLElement = document.getElementById('nojs') as HTMLElement;
+    const nojs: HTMLElement = document.getElementById("nojs") as HTMLElement;
     nojs.remove();
-    const noscripts: HTMLCollectionOf<HTMLElement> = document.getElementsByTagName('noscript');
+    const noscripts: HTMLCollectionOf<HTMLElement> = document.getElementsByTagName("noscript");
     for (const key in noscripts) {
       if (Object.prototype.hasOwnProperty.call(noscripts, key)) {
         const noscript = noscripts[key];
@@ -72,27 +72,27 @@ export default class Main implements CustomDelegate {
 
     // UI
     this.progressStep = 100 / this.planTotal;
-    const progressbar: HTMLDivElement = document.createElement('div');
-    progressbar.id = 'progressbar';
-    this.progress = document.createElement('div');
-    this.progress.id = 'progress';
+    const progressbar: HTMLDivElement = document.createElement("div");
+    progressbar.id = "progressbar";
+    this.progress = document.createElement("div");
+    this.progress.id = "progress";
     progressbar.appendChild(this.progress);
     document.body.appendChild(progressbar);
-    this.testArea = document.createElement('div');
-    this.testArea.id = 'testArea';
-    const customElementn: HTMLElement = document.createElement('custom-element');
-    customElementn.id = 'custom-element';
-    customElementn.className = 'testObj';
-    customElementn.setAttribute('c-val', '+');
+    this.testArea = document.createElement("div");
+    this.testArea.id = "testArea";
+    const customElementn: HTMLElement = document.createElement("custom-element");
+    customElementn.id = "custom-element";
+    customElementn.className = "testObj";
+    customElementn.setAttribute("c-val", "+");
     this.testArea.appendChild(customElementn);
-    this.checkbox = document.createElement('input');
-    this.checkbox.id = 'checkbox';
-    this.checkbox.className = 'testObj';
-    this.checkbox.type = 'checkbox';
+    this.checkbox = document.createElement("input");
+    this.checkbox.id = "checkbox";
+    this.checkbox.className = "testObj";
+    this.checkbox.type = "checkbox";
     this.testArea.appendChild(this.checkbox);
-    this.checkboxspan = document.createElement('span');
-    this.checkboxspan.id = 'checkboxspan';
-    this.checkboxspan.className = 'testObj';
+    this.checkboxspan = document.createElement("span");
+    this.checkboxspan.id = "checkboxspan";
+    this.checkboxspan.className = "testObj";
     this.testArea.appendChild(this.checkboxspan);
     document.body.appendChild(this.testArea);
 
@@ -166,7 +166,7 @@ export default class Main implements CustomDelegate {
    * 立即開始下一步測試任務
    */
   testNow() {
-    this.progress.style.width = (this.step * this.progressStep).toString() + '%';
+    this.progress.style.width = (this.step * this.progressStep).toString() + "%";
     console.log(this.progress.style.width)
     this.step++;
     const chk: string = this.ls.cheaking[this.langID];
@@ -271,17 +271,17 @@ export default class Main implements CustomDelegate {
       [this.ls.onLine[this.langID], navigator.onLine.toString()],
     ];
     if (this.viewInfo) {
-      const ul: HTMLUListElement = document.createElement('ul');
+      const ul: HTMLUListElement = document.createElement("ul");
       for (const text of texts) {
         console.log(text[0] + ": " + text[1]);
-        const li: HTMLLIElement = document.createElement('li');
+        const li: HTMLLIElement = document.createElement("li");
         li.innerHTML = text[0] + ":&emsp;";
-        const code: HTMLElement = document.createElement('code');
+        const code: HTMLElement = document.createElement("code");
         code.innerText = text[1];
         li.appendChild(code);
         ul.appendChild(li);
       }
-      document.body.appendChild(document.createElement('hr'));
+      document.body.appendChild(document.createElement("hr"));
       document.body.appendChild(ul);
     }
   }
@@ -303,8 +303,8 @@ export default class Main implements CustomDelegate {
    * @return {boolean} 檢查結果
    */
   canvasTest(): boolean {
-    const canvas: HTMLCanvasElement = document.createElement('canvas');
-    const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
+    const canvas: HTMLCanvasElement = document.createElement("canvas");
+    const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
     if (typeof canvas.getContext == "function" && ctx) {
       return this.ok(typeof ctx);
     } else {
@@ -411,7 +411,7 @@ export default class Main implements CustomDelegate {
    * 檢查 Event 事件
    */
   clickTest() {
-    this.checkbox.addEventListener('click', () => {
+    this.checkbox.addEventListener("click", () => {
       this.checkboxspan.style.width = "10px";
     });
     setTimeout(() => {
@@ -511,11 +511,11 @@ export default class Main implements CustomDelegate {
     if (!window.customElements.define) {
       return this.fail();
     }
-    window.customElements.define('custom-element', CustomElement);
-    const customElement: CustomElement = document.getElementById('custom-element') as CustomElement;
+    window.customElements.define("custom-element", CustomElement);
+    const customElement: CustomElement = document.getElementById("custom-element") as CustomElement;
     customElement.addInfo();
     setTimeout(() => {
-      const customElementE: CustomElement = document.getElementById('custom-element') as CustomElement;
+      const customElementE: CustomElement = document.getElementById("custom-element") as CustomElement;
       if (customElementE.innerHTML == "-+") {
         this.ok(customElementE.innerHTML);
       } else {
@@ -549,7 +549,7 @@ export default class Main implements CustomDelegate {
         return this.fail(val);
       }
       localStorage.removeItem(key);
-      return this.ok(vals.join(','));
+      return this.ok(vals.join(","));
     } else {
       return this.fail(val);
     }
@@ -560,8 +560,8 @@ export default class Main implements CustomDelegate {
    * @returns {boolean} 檢查結果
    */
   webGLTest(): boolean {
-    const canvas: HTMLCanvasElement = document.createElement('canvas');
-    const gl: WebGLRenderingContext | RenderingContext | null = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    const canvas: HTMLCanvasElement = document.createElement("canvas");
+    const gl: WebGLRenderingContext | RenderingContext | null = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
     if (gl && (gl instanceof WebGLRenderingContext)) {
       return this.ok(typeof gl);
     } else {
@@ -575,7 +575,7 @@ export default class Main implements CustomDelegate {
    * @return {boolean} true
    */
   ok(text: string = ""): boolean {
-    this.endi[0]++;
+    this.ends[0].push(this.step);
     return this.addInfo(text, true);
   }
 
@@ -585,7 +585,7 @@ export default class Main implements CustomDelegate {
    * @return {boolean} false
    */
   fail(text: string = ""): boolean {
-    this.endi[1]++;
+    this.ends[1].push(this.step);
     return this.addInfo(text, false);
   }
 
@@ -603,12 +603,12 @@ export default class Main implements CustomDelegate {
       this.progress.style.backgroundColor = "#F00";
     }
     if (!this.viewInfo) return isOK;
-    const ul = document.createElement('ul');
-    const li: HTMLLIElement = document.createElement('li');
-    const span: HTMLSpanElement = document.createElement('span');
+    const ul = document.createElement("ul");
+    const li: HTMLLIElement = document.createElement("li");
+    const span: HTMLSpanElement = document.createElement("span");
     span.className = isOK ? "ok" : "ng";
     span.title = info;
-    const checkbox = document.createElement('input');
+    const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = isOK;
     checkbox.onclick = function () {
@@ -630,9 +630,9 @@ export default class Main implements CustomDelegate {
   addTitle(title: string) {
     console.log(title);
     if (!this.viewInfo) return;
-    const line: HTMLDivElement = document.createElement('div');
-    this.ul = document.createElement('ul');
-    const li: HTMLLIElement = document.createElement('li');
+    const line: HTMLDivElement = document.createElement("div");
+    this.ul = document.createElement("ul");
+    const li: HTMLLIElement = document.createElement("li");
     li.innerText = title;
     this.ul.appendChild(li);
     line.appendChild(this.ul);
@@ -645,7 +645,7 @@ export default class Main implements CustomDelegate {
    */
   addLine(text: string) {
     if (!this.viewInfo) return;
-    const line: HTMLDivElement = document.createElement('div');
+    const line: HTMLDivElement = document.createElement("div");
     line.innerHTML = text;
     document.body.appendChild(line);
   }
@@ -656,22 +656,31 @@ export default class Main implements CustomDelegate {
   end() {
     this.progress.style.transition = "none";
     this.progress.style.width = "100%";
-    const testObjs: HTMLCollectionOf<Element> = document.getElementsByClassName('testObj');
+    const testObjs: HTMLCollectionOf<Element> = document.getElementsByClassName("testObj");
     for (const key in testObjs) {
       if (Object.prototype.hasOwnProperty.call(testObjs, key)) {
         const testObj: HTMLElement = testObjs[key] as HTMLElement;
         testObj.style.display = "none";
       }
     }
-    const stat: HTMLSpanElement = document.getElementById('stat') as HTMLSpanElement;
-    const alerti: HTMLSpanElement = document.getElementById('alert') as HTMLSpanElement;
+    const stat: HTMLSpanElement = document.getElementById("stat") as HTMLSpanElement;
+    const alerti: HTMLSpanElement = document.getElementById("alert") as HTMLSpanElement;
     console.log(stat.innerText);
-    stat.innerText = this.about ? `${this.ls.end[this.langID]}, ${this.ls.total[this.langID]} ${this.endi[0] + this.endi[1]} , ${this.ls.pass[this.langID]} ${this.endi[0]} , ${this.ls.fail[this.langID]} ${this.endi[1]} .` : "";
+    const endi: number[] = [
+      this.ends[0].length,
+      this.ends[1].length
+    ];
+    stat.innerText = this.about ? `${this.ls.end[this.langID]}, ${this.ls.total[this.langID]} ${endi[0] + endi[1]} , ${this.ls.pass[this.langID]} ${endi[0]} , ${this.ls.fail[this.langID]} ${endi[1]} .` : "";
     this.testArea.remove();
-    const isOK: boolean = this.endi[1] == 0;
+    const isOK: boolean = endi[1] == 0;
     if (this.saveStorage > 0 && this.saveStorageKey.length > 0 && window.Storage && window.localStorage && window.localStorage instanceof Storage) {
       const save: Storage = (this.saveStorage == 1) ? window.sessionStorage : window.localStorage;
-      const saveVal: string = "1," + this.endi.join(','); // 版本,成功,失敗
+      const saveVal: string = [
+        "1", // 版本
+        endi[1] == 0 ? "A" : this.ends[0].join("/"), // 成功的ID列表
+        endi[0] == 0 ? "A" : this.ends[1].join("/"), // 失敗的ID列表
+        new Date().valueOf()
+      ].join(",");
       save.setItem(this.saveStorageKey, saveVal);
     }
     if (isOK) {
