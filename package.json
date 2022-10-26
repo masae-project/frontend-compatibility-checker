@@ -1,15 +1,16 @@
 {
   "name": "frontend-compatibility-checker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "雅诗浏览器前端兼容性检查器",
   "main": "webpack.config.js",
   "scripts": {
-    "build": "webpack --mode development --progress",
-    "release": "npm run clean && webpack --mode production --progress",
-    "serve": "npm run clean && npm run build && webpack-dev-server --mode development --progress --host 127.0.0.1 --port 9000 --open",
-    "watch": "webpack --mode development --progress --watch",
+    "build": "npm run lint && webpack --mode development",
+    "release": "npm run clean && npm run lint && webpack --mode production",
+    "serve": "npm run clean && npm run build && webpack-dev-server --mode development --host 127.0.0.1 --open",
+    "watch": "webpack --mode development --watch",
     "debug": "npm run watch & http-server",
-    "clean": "rm -rf dist/*"
+    "clean": "rm -f index.html && rm -rf dist/*",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src --ignore-pattern *.d.ts"
   },
   "repository": {
     "type": "git",
@@ -26,11 +27,15 @@
   },
   "homepage": "https://github.com/miyabi-project/frontend-compatibility-checker#readme",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^4.2.2",
+    "eslint-plugin-import": "^2.26.0",
     "html-webpack-plugin": "^5.5.0",
     "http-server": "^14.1.1",
     "mini-css-extract-plugin": "^2.6.1",
+    "progress-bar-webpack-plugin": "^2.1.0",
     "style-loader": "^3.3.1",
     "terser-webpack-plugin": "^5.3.6",
     "ts-loader": "^9.4.1",

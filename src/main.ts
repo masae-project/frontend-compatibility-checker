@@ -4,21 +4,21 @@ import CustomDelegateClass, { CustomDelegate } from "./custom-delegate";
 export default class Main implements CustomDelegate {
   // <可配置的選項>
   // 在檢測全部通過後，要跳轉到的網址（空: 不跳转; `a`: 显示一个弹出提示框。）
-  urlOK: string = ""; // ""
+  urlOK = ""; // ""
   // 在檢測未完全透過時，要跳轉到的網址（空: 不跳转; `a`: 显示一个弹出提示框。）
-  urlFail: string = ""; // ""
+  urlFail = ""; // ""
   // 無論是否成功都跳轉（覆蓋以上設定）
-  url: string = ""; // ""
+  url = ""; // ""
   // 在頁面中顯示詳細資訊（否則只有提示資訊和進度條）
-  viewInfo: boolean = true; // true
+  viewInfo = true; // true
   // 儲存記錄到: 0.禁用 1.會話儲存 2.持久儲存
   saveStorage = 1; // 0
   // 如果儲存記錄，鍵名是？（值將寫入 0 或 1 ）
-  saveStorageKey: string = "compatibility"; // compatibility
+  saveStorageKey = "compatibility"; // compatibility
   // 是否輸出一些關於資訊
-  about: boolean = true;
+  about = true;
   // 語言
-  langID: number = 1;
+  langID = 1;
   // </可配置的選項>
 
   planTotal = 14;
@@ -26,7 +26,7 @@ export default class Main implements CustomDelegate {
   progressStep = 0;
   checkbox: HTMLInputElement;
   checkboxspan: HTMLSpanElement;
-  step: number = 0;
+  step = 0;
   ends: number[][] = [[], []];
   testArea: HTMLDivElement;
   ul: HTMLUListElement = document.createElement("ul");
@@ -49,7 +49,7 @@ export default class Main implements CustomDelegate {
     pass: ["通过", "Pass"],
     chkok: ["检测通过!", "Check OK!"],
     cheaking: ["正在检测 ", "Cheaking "],
-  }
+  };
   /**
    * 構造方法
    */
@@ -67,7 +67,7 @@ export default class Main implements CustomDelegate {
         noscript.remove();
       }
     }
-    document.body.innerHTML = '<p><span id="stat">' + this.ls.chk[this.langID] + '</span>' + (this.about ? '&emsp;&emsp;<a href="https://github.com/miyabi-project/frontend-compatibility-checker" target="_blank">' + this.ls.code[this.langID] + '</a>' : '') + '</p><span id="alert">' + this.ls.nr[this.langID] + this.ls.no[this.langID] + '</span>';
+    document.body.innerHTML = "<p><span id=\"stat\">" + this.ls.chk[this.langID] + "</span>" + (this.about ? "&emsp;&emsp;<a href=\"https://github.com/miyabi-project/frontend-compatibility-checker\" target=\"_blank\">" + this.ls.code[this.langID] + "</a>" : "") + "</p><span id=\"alert\">" + this.ls.nr[this.langID] + this.ls.no[this.langID] + "</span>";
     console.log(document.body.innerText);
 
     // UI
@@ -167,7 +167,7 @@ export default class Main implements CustomDelegate {
    */
   testNow() {
     this.progress.style.width = (this.step * this.progressStep).toString() + "%";
-    console.log(this.progress.style.width)
+    console.log(this.progress.style.width);
     this.step++;
     const chk: string = this.ls.cheaking[this.langID];
     const c = " " + this.ls.compat[this.langID] + "...";
@@ -252,7 +252,7 @@ export default class Main implements CustomDelegate {
    * 延遲啟動下一步測試任務
    * @param {number} time 延遲時間
    */
-  testDelay(time: number = 100) {
+  testDelay(time = 100) {
     setTimeout(() => {
       this.testNow();
     }, time);
@@ -336,8 +336,8 @@ export default class Main implements CustomDelegate {
     this.checkboxspan.style.animation = "";
     this.checkboxspan.style.transition = "";
     this.checkbox.checked = true;
-    let isOK: boolean = false;
-    let okStr: string = "";
+    let isOK = false;
+    let okStr = "";
     let width: number = this.checkboxspan.offsetWidth;
     isOK = (width == 20);
     okStr = `${isOK}${width}`;
@@ -378,7 +378,7 @@ export default class Main implements CustomDelegate {
     this.checkboxspan.style.transition = "0.3s";
     this.checkboxspan.style.width = "50px";
     setTimeout(() => {
-      let width: number = this.checkboxspan.offsetWidth;
+      const width: number = this.checkboxspan.offsetWidth;
       if (width == 50) {
         this.ok(width.toString());
       } else {
@@ -397,7 +397,7 @@ export default class Main implements CustomDelegate {
     const arrowFunction = "var t = () => {};";
     const asyncFunction = "var t = async () => {};";
     try {
-      let f: Function = new Function(arrowFunction);
+      let f = new Function(arrowFunction);
       f = new Function(asyncFunction);
       return this.ok(f.toString());
     }
@@ -486,7 +486,7 @@ export default class Main implements CustomDelegate {
       map.set(key, val);
       set.add(val);
     }
-    let json: string = "";
+    let json = "";
     try {
       const obj = Object.create(null);
       for (const [k, v] of map) {
@@ -496,6 +496,7 @@ export default class Main implements CustomDelegate {
       const arr = [...set];
       json += "|" + JSON.stringify(arr);
     } catch (e) {
+      console.log(e);
     }
     if (map.size == 10 && set.size == 10) {
       return this.ok(map.size.toString() + json);
@@ -574,7 +575,7 @@ export default class Main implements CustomDelegate {
    * @param text 細節資訊
    * @return {boolean} true
    */
-  ok(text: string = ""): boolean {
+  ok(text = ""): boolean {
     this.ends[0].push(this.step);
     return this.addInfo(text, true);
   }
@@ -584,7 +585,7 @@ export default class Main implements CustomDelegate {
    * @param text 細節資訊
    * @return {boolean} false
    */
-  fail(text: string = ""): boolean {
+  fail(text = ""): boolean {
     this.ends[1].push(this.step);
     return this.addInfo(text, false);
   }
@@ -613,7 +614,7 @@ export default class Main implements CustomDelegate {
     checkbox.checked = isOK;
     checkbox.onclick = function () {
       return false;
-    }
+    };
     checkbox.readOnly = true;
     span.innerText = ` ${isOK ? this.ls.ok[this.langID] : this.ls.fail[this.langID]}! `;
     span.insertBefore(checkbox, span.firstChild);

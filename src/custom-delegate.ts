@@ -11,14 +11,14 @@ export interface CustomDelegate {
 }
 
 export default class CustomDelegateClass {
-    delegate: CustomDelegate | null = null
+  delegate: CustomDelegate | null = null;
 
-    /**
+  /**
      * 這裡模擬了一個異步的操作，當操作完成後，調用代理方法
      */
-    constructor() {
-        setTimeout(() => {
-            this.delegate?.delegateFunc("1", 0);
-        }, 100);
-    }
+  constructor() {
+    setTimeout(() => {
+      this.delegate?.delegateFunc("1", 0);
+    }, 100);
+  }
 }
