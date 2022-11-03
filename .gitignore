@@ -8,11 +8,13 @@ __*
 # 备份和临时文件
 *.iml
 *.sw*
+*.un~
+.*.*~
 *.bak
 *.tmp
 *.tmp.*
 # 生成結果檔案
-./index.html
+/index.html
 dist/*
 bin/*
 *.exe
