@@ -397,9 +397,9 @@ export default class Main implements CustomDelegate {
     const arrowFunction = "var t = () => {};";
     const asyncFunction = "var t = async () => {};";
     try {
-      let f = new Function(arrowFunction);
-      f = new Function(asyncFunction);
-      return this.ok(f.toString());
+      const f1 = new Function(arrowFunction);
+      const f2 = new Function(asyncFunction);
+      return this.ok(f1.toString() + " " + f2.toString());
     }
     catch (e: any) {
       this.fail(e.toString());
